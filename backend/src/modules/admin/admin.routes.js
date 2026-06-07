@@ -1,0 +1,36 @@
+import express from "express";
+import { authMiddleware } from "../../middlewares/auth.middleware.js";
+import { roleMiddleware } from "../../middlewares/role.middleware.js";
+import {
+  getDashboardStats,
+  getAllUsers,
+  toggleUserStatus,
+  getPendingRetailers,
+  approveRetailer,
+  rejectRetailer,
+  approveProduct
+} from "./admin.controller.js";
+
+const router = express.Router();
+
+
+router.use(authMiddleware, roleMiddleware("ADMIN"));
+
+router.get("/dashboard", getDashboardStats);
+router.get("/users", getAllUsers);
+router.patch("/users/:id/status", toggleUserStatus);
+
+ 
+router.get("/retailers", getPendingRetailers);
+router.patch("/retailers/:id/approve", approveRetailer);
+router.patch("/retailers/:id/reject", rejectRetailer);
+
+router.patch(
+  "/products/:id/approve",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  approveProduct
+);
+
+
+export default router;
