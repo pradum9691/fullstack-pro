@@ -12,7 +12,7 @@ import {
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import passport from "../config/passport.js";
 
-const router = express.Router();  
+const router = express.Router();
 
 router.post("/login", login);
 router.post("/register", register);
@@ -24,34 +24,33 @@ router.put("/change-password", authMiddleware, changePassword);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 
- 
 router.get(
   "/google",
   passport.authenticate("google", {
     scope: ["profile", "email"],
     session: false,
-  })
+  }),
 );
 
 router.get(
   "/google/callback",
   passport.authenticate("google", {
     session: false,
-    failureRedirect: "http://localhost:5173/login",
+    failureRedirect: `${process.env.FRONTEND_URL}/login`,
   }),
   (req, res) => {
     if (!req.user) {
-      return res.redirect("http://localhost:5173/login");
+      return res.redirect(`${process.env.FRONTEND_URL}/login`);
     }
 
     const { token, user } = req.user;
 
     res.redirect(
-      `http://localhost:5173/google-success?token=${token}&user=${encodeURIComponent(
-        JSON.stringify(user)
-      )}`
+      `${process.env.FRONTEND_URL}/google-success?token=${token}&user=${encodeURIComponent(
+        JSON.stringify(user),
+      )}`,
     );
-  }
+  },
 );
- 
+
 export default router;
