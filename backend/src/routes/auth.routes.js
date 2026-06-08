@@ -12,7 +12,7 @@ import {
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import passport from "../config/passport.js";
 
-const router = express.Router();
+const router = express.Router();  
 
 router.post("/login", login);
 router.post("/register", register);

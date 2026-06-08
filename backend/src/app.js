@@ -23,11 +23,7 @@ const app = express();
 app.use(passport.initialize());
 
 app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "https://fullstack-pro-cdwk.vercel.app"
-  ],
+  origin: process.env.FRONTEND_URL,
   credentials: true,
 }));
 
