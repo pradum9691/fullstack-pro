@@ -15,7 +15,6 @@ const Login = () => {
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
- 
   const redirectTo = location.state?.from || "/";
 
   const {
@@ -51,9 +50,8 @@ const Login = () => {
       subtitle="Enter your credentials to continue"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-     
         {error && <p className="text-xs text-red-400 text-center">{error}</p>}
- 
+
         <div className="relative">
           <Mail
             size={16}
@@ -75,7 +73,6 @@ const Login = () => {
           />
         </div>
 
- 
         <div className="relative">
           <Lock
             size={16}
@@ -97,7 +94,6 @@ const Login = () => {
           />
         </div>
 
- 
         <div className="flex items-center justify-between text-xs text-white/50">
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" />
@@ -112,7 +108,7 @@ const Login = () => {
             Forgot Password?
           </button>
         </div>
- 
+
         <button
           type="submit"
           disabled={isSubmitting}
@@ -131,13 +127,14 @@ const Login = () => {
         <button
           type="button"
           onClick={() =>
-            (window.location.href = "http://localhost:5000/api/auth/google")
+            (window.location.href =
+              "https://fullstack-pro-fq92.onrender.com/api/auth/google")
           }
           className="w-full py-3 border mt-4 text-white"
         >
           Continue with Google
         </button>
-     
+
         <p className="text-center text-xs text-white/40 pt-6">
           Don’t have an account?{" "}
           <button
