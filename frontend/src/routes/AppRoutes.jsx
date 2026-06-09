@@ -7,6 +7,10 @@ import PublicRoute from "./PublicRoute";
 import AdminRoute from "./AdminRoute";
 import SuspenseLoader from "../components/layout/SuspenseLoader";
 
+// Guards & Layouts
+const RetailerRoute = lazy(() => import("./RetailerRoute"));
+const RetailerLayout = lazy(() => import("../layouts/RetailerLayout"));
+
 // Lazy Loaded Pages
 const Home = lazy(() => import("../pages/customer/Home"));
 const Products = lazy(() => import("../pages/customer/Products"));
@@ -35,6 +39,12 @@ const AdminUsers = lazy(() => import("../pages/admin/Users"));
 const AdminRetailers = lazy(() => import("../pages/admin/Retailers"));
 const AdminProducts = lazy(() => import("../pages/admin/Products"));
 const AdminOrders = lazy(() => import("../pages/admin/Orders"));
+
+// Retailer Pages
+const RetailerDashboard = lazy(() => import("../pages/retailer/Dashboard"));
+const RetailerProducts = lazy(() => import("../pages/retailer/Products"));
+const RetailerAddProduct = lazy(() => import("../pages/retailer/AddProduct"));
+const RetailerOrders = lazy(() => import("../pages/retailer/Orders"));
 
 const AppRoutes = () => {
   return (
@@ -92,6 +102,16 @@ const AppRoutes = () => {
             </PublicRoute>
           }
         />
+
+        {/* Retailer Protected Routes */}
+        <Route element={<RetailerRoute />}>
+          <Route element={<RetailerLayout />}>
+            <Route path="/retailer/dashboard" element={<RetailerDashboard />} />
+            <Route path="/retailer/products" element={<RetailerProducts />} />
+            <Route path="/retailer/products/add" element={<RetailerAddProduct />} />
+            <Route path="/retailer/orders" element={<RetailerOrders />} />
+          </Route>
+        </Route>
 
         {/* Admin Protected Routes */}
         <Route element={<AdminRoute />}>

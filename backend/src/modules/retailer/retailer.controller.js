@@ -1,5 +1,11 @@
- import { applyForRetailer } from "./retailer.service.js";
+import { 
+  applyForRetailer,
+  fetchRetailerProducts,
+  fetchRetailerDashboardStats,
+  fetchRetailerOrders,
+} from "./retailer.service.js";
 import { applyRetailerSchema } from "./retailer.validation.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 
 export const applyRetailer = async (req, res) => {
   try {
@@ -24,3 +30,27 @@ export const applyRetailer = async (req, res) => {
     });
   }
 };
+
+export const getRetailerProducts = asyncHandler(async (req, res) => {
+  const products = await fetchRetailerProducts(req.user._id);
+  res.json({
+    success: true,
+    data: products,
+  });
+});
+
+export const getRetailerStats = asyncHandler(async (req, res) => {
+  const stats = await fetchRetailerDashboardStats(req.user._id);
+  res.json({
+    success: true,
+    data: stats,
+  });
+});
+
+export const getRetailerOrders = asyncHandler(async (req, res) => {
+  const orders = await fetchRetailerOrders(req.user._id);
+  res.json({
+    success: true,
+    data: orders,
+  });
+});
