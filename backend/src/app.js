@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import mongoSanitize from "express-mongo-sanitize";
+import { generalLimiter } from "./middlewares/rateLimit.middleware.js";
 
 
 import authRoutes from "./routes/auth.routes.js";
@@ -48,6 +50,12 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// 🛡️ MongoDB Injection Protection — strips $ and . from user inputs
+app.use(mongoSanitize());
+
+// 🚦 General Rate Limiting — max 100 requests/min for all /api routes
+app.use("/api", generalLimiter);
 
 app.get("/", (req, res) => {
   res.send("Backend is running successfully 🚀");
