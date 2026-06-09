@@ -8,6 +8,7 @@ import {
    approveProductById,
    rejectProductById,    
 } from "./admin.service.js";
+import redis from "../../config/redis.js";
 
 export const getDashboardStats = async (req, res) => {
   const stats = await fetchDashboardStats();
@@ -54,6 +55,14 @@ export const rejectRetailer = async (req, res) => {
 export const approveProduct = async (req, res) => {
   const result = await approveProductById(req.params.id);
 
+  try {
+    await redis.del(`product:${req.params.id}`);
+    const keys = await redis.keys("products:*");
+    if (keys.length) await redis.del(keys);
+  } catch (error) {
+    console.error("Redis product approval cache invalidation failed:", error.message);
+  }
+
   res.json({
     success: true,
     message: "Product approved successfully",
@@ -64,6 +73,14 @@ export const approveProduct = async (req, res) => {
 export const rejectProduct = async (req, res) => {
   const { reason } = req.body; // optional
   const result = await rejectProductById(req.params.id, reason);
+
+  try {
+    await redis.del(`product:${req.params.id}`);
+    const keys = await redis.keys("products:*");
+    if (keys.length) await redis.del(keys);
+  } catch (error) {
+    console.error("Redis product rejection cache invalidation failed:", error.message);
+  }
 
   res.json({
     success: true,

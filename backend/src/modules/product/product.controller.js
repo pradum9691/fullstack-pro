@@ -17,9 +17,16 @@ export const addProduct = asyncHandler(async (req, res) => {
 
 
 export const getProducts = asyncHandler(async (req, res) => {
-  const { search = "", category, minPrice, maxPrice, sort } = req.query;
+  const { ids, search = "", category, minPrice, maxPrice, sort } = req.query;
   const cacheKey = `products:${JSON.stringify(req.query)}`;
-  const cached = await redis.get(cacheKey);
+  
+  let cached = null;
+  try {
+    cached = await redis.get(cacheKey);
+  } catch (error) {
+    console.error("Redis connection failed. Falling back to MongoDB.", error.message);
+  }
+
   if (cached) {
     console.log("Products from Redis");
     return res.json({ success: true, data: JSON.parse(cached) });
@@ -30,6 +37,10 @@ export const getProducts = asyncHandler(async (req, res) => {
     isActive: true,
   };
 
+  if (ids) {
+    const idArray = ids.split(",").filter(Boolean);
+    query._id = { $in: idArray };
+  }
    
   if (search) {
     query.name = { $regex: search, $options: "i" };
@@ -55,7 +66,11 @@ export const getProducts = asyncHandler(async (req, res) => {
   const products = await Product.find(query).sort(sortQuery);
 
  
-  await redis.set(cacheKey, JSON.stringify(products), "EX", 60);
+  try {
+    await redis.set(cacheKey, JSON.stringify(products), "EX", 60);
+  } catch (error) {
+    console.error("Redis save failed:", error.message);
+  }
 
   console.log("🗄️ Products from MongoDB");
 
@@ -70,7 +85,13 @@ export const getProductDetail = asyncHandler(async (req, res) => {
 
   const cacheKey = `product:${id}`;
 
-  const cached = await redis.get(cacheKey);
+  let cached = null;
+  try {
+    cached = await redis.get(cacheKey);
+  } catch (error) {
+    console.error("Redis connection failed. Falling back to MongoDB.", error.message);
+  }
+
   if (cached) {
     console.log("Single product from Redis");
     return res.json({ success: true, data: JSON.parse(cached) });
@@ -85,7 +106,11 @@ export const getProductDetail = asyncHandler(async (req, res) => {
     });
   }
 
-  await redis.set(cacheKey, JSON.stringify(product), "EX", 120);
+  try {
+    await redis.set(cacheKey, JSON.stringify(product), "EX", 120);
+  } catch (error) {
+    console.error("Redis save failed:", error.message);
+  }
 
   console.log(" Single product from Mongo");
 

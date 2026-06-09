@@ -8,7 +8,8 @@ import {
   getPendingRetailers,
   approveRetailer,
   rejectRetailer,
-  approveProduct
+  approveProduct,
+  rejectProduct
 } from "./admin.controller.js";
 
 const router = express.Router();
@@ -30,6 +31,13 @@ router.patch(
   authMiddleware,
   roleMiddleware("ADMIN"),
   approveProduct
+);
+
+router.patch(
+  "/products/:id/reject",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  rejectProduct
 );
 
 

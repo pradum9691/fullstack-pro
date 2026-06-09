@@ -25,12 +25,14 @@ const DashboardLayout = () => {
       </AnimatePresence>
  
       <div className="flex-1 relative">
-        <button
-          onClick={() => setOpen(true)}
-          className="absolute top-5 left-5 z-20 text-xs opacity-60 hover:opacity-100"
-        >
-          ☰
-        </button>
+        {!open && (
+          <button
+            onClick={() => setOpen(true)}
+            className="absolute top-5 left-5 z-20 h-10 w-10 bg-neutral-900 border border-white/10 rounded-full flex items-center justify-center text-white hover:bg-neutral-800 transition duration-200"
+          >
+            ☰
+          </button>
+        )}
 
         <motion.main
           key="page"

@@ -2,6 +2,7 @@ import { User } from "../../models/user.model.js";
 import { Retailer } from "../retailer/retailer.model.js";
 import { AppError } from "../../utils/AppError.js";
 import { Product } from "../product/product.model.js";
+import { Order } from "../order/order.model.js";
 
 
 export const fetchDashboardStats = async () => {
@@ -12,9 +13,26 @@ export const fetchDashboardStats = async () => {
   const retailers = await User.countDocuments({ role: "RETAILER" });
   const customers = await User.countDocuments({ role: "CUSTOMER" });
 
+  const totalOrders = await Order.countDocuments();
+  const pendingOrders = await Order.countDocuments({ status: "PENDING_PAYMENT" });
+  const completedOrders = await Order.countDocuments({ status: { $in: ["PAID", "SHIPPED", "DELIVERED"] } });
+
+  const salesResult = await Order.aggregate([
+    { $match: { status: { $in: ["PAID", "SHIPPED", "DELIVERED"] } } },
+    { $group: { _id: null, totalSales: { $sum: "$totalAmount" } } }
+  ]);
+  const totalSales = salesResult[0]?.totalSales || 0;
+
+  const totalProducts = await Product.countDocuments();
+  const pendingProducts = await Product.countDocuments({ status: "PENDING" });
+  const approvedProducts = await Product.countDocuments({ status: "APPROVED" });
+  const rejectedProducts = await Product.countDocuments({ status: "REJECTED" });
+
   return { 
     totalUsers, activeUsers, blockedUsers, 
-    admins, retailers, customers 
+    admins, retailers, customers,
+    totalOrders, pendingOrders, completedOrders, totalSales,
+    totalProducts, pendingProducts, approvedProducts, rejectedProducts
   };
 };
 

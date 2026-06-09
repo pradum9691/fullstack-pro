@@ -76,8 +76,8 @@ const Products = () => {
     const ids = JSON.parse(localStorage.getItem(RECENT_KEY)) || [];
     if (!ids.length) return;
 
-    Promise.all(ids.map((id) => api.get(`/products/${id}`)))
-      .then((res) => setRecentProducts(res.map((r) => r.data.data)))
+    api.get("/products", { params: { ids: ids.join(",") } })
+      .then((res) => setRecentProducts(res.data.data || []))
       .catch(() => {});
   }, []);
 

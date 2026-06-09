@@ -24,6 +24,13 @@ import ChangePassword from "../pages/customer/ChangePassword";
 import ResetPassword from "../pages/customer/ResetPassword";
 import ForgotPassword from "../pages/customer/ForgotPassword";
 
+import DashboardLayout from "../layouts/DashboardLayout";
+import AdminRoute from "./AdminRoute";
+import AdminDashboard from "../pages/admin/Dashboard";
+import AdminUsers from "../pages/admin/Users";
+import AdminRetailers from "../pages/admin/Retailers";
+import AdminProducts from "../pages/admin/Products";
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -79,6 +86,17 @@ const AppRoutes = () => {
           </PublicRoute>
         }
       />
+
+      {/* Admin Protected Routes */}
+      <Route element={<AdminRoute />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/retailers" element={<AdminRetailers />} />
+          <Route path="/admin/products" element={<AdminProducts />} />
+        </Route>
+      </Route>
+
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
