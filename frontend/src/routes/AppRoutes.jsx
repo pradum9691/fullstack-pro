@@ -30,6 +30,7 @@ import AdminDashboard from "../pages/admin/Dashboard";
 import AdminUsers from "../pages/admin/Users";
 import AdminRetailers from "../pages/admin/Retailers";
 import AdminProducts from "../pages/admin/Products";
+import AdminOrders from "../pages/admin/Orders";
 
 const AppRoutes = () => {
   return (
@@ -94,6 +95,7 @@ const AppRoutes = () => {
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/retailers" element={<AdminRetailers />} />
           <Route path="/admin/products" element={<AdminProducts />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
         </Route>
       </Route>
 

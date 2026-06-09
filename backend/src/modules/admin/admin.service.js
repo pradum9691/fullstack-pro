@@ -148,3 +148,77 @@ export const rejectProductById = async (productId, reason) => {
     status: product.status,
   };
 };
+
+export const fetchAllOrders = async ({ status, search, page = 1, limit = 10 }) => {
+  let queryObj = {};
+  if (status && status !== "ALL") {
+    queryObj.status = status;
+  }
+
+  if (search) {
+    if (search.match(/^[0-9a-fA-F]{24}$/)) {
+      queryObj._id = search;
+    } else {
+      const users = await User.find({
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } }
+        ]
+      }).select("_id");
+      const userIds = users.map(u => u._id);
+      queryObj.user = { $in: userIds };
+    }
+  }
+
+  const skip = (page - 1) * limit;
+  const total = await Order.countDocuments(queryObj);
+  const orders = await Order.find(queryObj)
+    .populate("user", "name email")
+    .populate("items.product", "name images")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  return {
+    orders,
+    pagination: {
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit)
+    }
+  };
+};
+
+export const updateAdminOrderStatus = async (orderId, status) => {
+  const allowedStatuses = [
+    "PENDING_PAYMENT",
+    "PAID",
+    "SHIPPED",
+    "DELIVERED",
+    "CANCELLED",
+  ];
+
+  if (!allowedStatuses.includes(status)) {
+    throw new AppError("Invalid order status", 400);
+  }
+
+  const order = await Order.findById(orderId);
+  if (!order) {
+    throw new AppError("Order not found", 404);
+  }
+
+  order.status = status;
+  order.statusHistory.push({
+    status,
+    timestamp: new Date(),
+    updatedBy: "ADMIN",
+  });
+
+  if (status === "CANCELLED") {
+    order.cancelledAt = new Date();
+  }
+
+  await order.save();
+  return order;
+};

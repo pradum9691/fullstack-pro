@@ -5,10 +5,13 @@ import {
   fetchPendingRetailers,
   approveRetailerById,
   rejectRetailerById,
-   approveProductById,
-   rejectProductById,    
+  approveProductById,
+  rejectProductById,
+  fetchAllOrders,
+  updateAdminOrderStatus,
 } from "./admin.service.js";
 import redis from "../../config/redis.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 
 export const getDashboardStats = async (req, res) => {
   const stats = await fetchDashboardStats();
@@ -88,4 +91,31 @@ export const rejectProduct = async (req, res) => {
     data: result,
   });
 };
+
+export const getAllOrders = asyncHandler(async (req, res) => {
+  const { status, search, page, limit } = req.query;
+  const result = await fetchAllOrders({
+    status,
+    search,
+    page: Number(page) || 1,
+    limit: Number(limit) || 10,
+  });
+
+  res.json({
+    success: true,
+    data: result.orders,
+    pagination: result.pagination,
+  });
+});
+
+export const updateOrderStatusAdmin = asyncHandler(async (req, res) => {
+  const { status } = req.body;
+  const order = await updateAdminOrderStatus(req.params.id, status);
+
+  res.json({
+    success: true,
+    message: "Order status updated successfully by Admin",
+    data: order,
+  });
+});
 

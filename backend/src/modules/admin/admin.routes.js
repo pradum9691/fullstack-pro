@@ -9,7 +9,9 @@ import {
   approveRetailer,
   rejectRetailer,
   approveProduct,
-  rejectProduct
+  rejectProduct,
+  getAllOrders,
+  updateOrderStatusAdmin,
 } from "./admin.controller.js";
 
 const router = express.Router();
@@ -25,6 +27,9 @@ router.patch("/users/:id/status", toggleUserStatus);
 router.get("/retailers", getPendingRetailers);
 router.patch("/retailers/:id/approve", approveRetailer);
 router.patch("/retailers/:id/reject", rejectRetailer);
+
+router.get("/orders", getAllOrders);
+router.patch("/orders/:id/status", updateOrderStatusAdmin);
 
 router.patch(
   "/products/:id/approve",

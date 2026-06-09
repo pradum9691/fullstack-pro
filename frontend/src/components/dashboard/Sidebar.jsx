@@ -11,7 +11,8 @@ import {
   PackageCheck, 
   ShoppingBag, 
   LogOut, 
-  X 
+  X,
+  ClipboardList,
 } from "lucide-react";
 
 const Sidebar = ({ close }) => {
@@ -37,6 +38,7 @@ const Sidebar = ({ close }) => {
     { name: "Manage Users", path: "/admin/users", icon: Users },
     { name: "Verify Retailers", path: "/admin/retailers", icon: ShieldCheck },
     { name: "Verify Products", path: "/admin/products", icon: PackageCheck },
+    { name: "Manage Orders", path: "/admin/orders", icon: ClipboardList },
   ];
 
   const isActive = (path) => location.pathname === path;
