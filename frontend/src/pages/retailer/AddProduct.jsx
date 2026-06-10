@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import api from "../../utils/api";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Save, Plus, X } from "lucide-react";
+import { ArrowLeft, Save, X, Upload, ImagePlus, Loader2 } from "lucide-react";
 
 const AddProduct = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -14,10 +17,13 @@ const AddProduct = () => {
     stock: "",
     category: "",
   });
-  
-  // Custom image links lists
+
+  // Uploaded image URLs (from Cloudinary)
   const [images, setImages] = useState([]);
+
+  // For URL fallback mode
   const [imageInput, setImageInput] = useState("");
+  const [uploadMode, setUploadMode] = useState("file"); // "file" or "url"
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,11 +33,78 @@ const AddProduct = () => {
     }));
   };
 
-  const handleAddImage = (e) => {
+  // Upload files to Cloudinary via backend
+  const uploadFiles = async (files) => {
+    if (files.length === 0) return;
+    if (images.length + files.length > 5) {
+      toast.error("Maximum 5 images allowed per product");
+      return;
+    }
+
+    const formPayload = new FormData();
+    Array.from(files).forEach((file) => {
+      formPayload.append("images", file);
+    });
+
+    try {
+      setUploading(true);
+      const res = await api.post("/products/upload-images", formPayload, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (res.data.success) {
+        setImages((prev) => [...prev, ...res.data.data]);
+        toast.success(res.data.message);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Image upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // File input change handler
+  const handleFileSelect = (e) => {
+    if (e.target.files) {
+      uploadFiles(e.target.files);
+    }
+    // Reset input to allow re-uploading same file
+    e.target.value = "";
+  };
+
+  // Drag & Drop handlers
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      uploadFiles(e.dataTransfer.files);
+    }
+  };
+
+  // URL fallback add
+  const handleAddImageUrl = (e) => {
     e.preventDefault();
     if (!imageInput) return;
     if (!imageInput.startsWith("http://") && !imageInput.startsWith("https://")) {
       toast.error("Please enter a valid image URL");
+      return;
+    }
+    if (images.length >= 5) {
+      toast.error("Maximum 5 images allowed");
       return;
     }
     setImages((prev) => [...prev, imageInput]);
@@ -44,9 +117,10 @@ const AddProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (images.length === 0) {
-      // Provide a standard premium placeholder image if user didn't enter one
-      images.push("https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800");
+      toast.error("Please upload at least one product image");
+      return;
     }
 
     try {
@@ -64,7 +138,7 @@ const AddProduct = () => {
         navigate("/retailer/products");
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to add product. Check validation constraints.");
+      toast.error(err.response?.data?.message || "Failed to add product.");
     } finally {
       setLoading(false);
     }
@@ -74,8 +148,8 @@ const AddProduct = () => {
     <div className="space-y-8 pb-12 bg-neutral-950 text-white max-w-4xl">
       {/* Title */}
       <div className="flex items-center gap-3">
-        <Link 
-          to="/retailer/products" 
+        <Link
+          to="/retailer/products"
           className="h-10 w-10 bg-neutral-900 border border-white/10 rounded-full flex items-center justify-center text-neutral-400 hover:text-white transition duration-200"
         >
           <ArrowLeft size={16} />
@@ -90,7 +164,7 @@ const AddProduct = () => {
         {/* Core details card */}
         <div className="bg-neutral-900 border border-white/5 p-6 rounded-2xl space-y-6">
           <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-400 border-b border-white/5 pb-3">Product Description</h3>
-          
+
           <div className="space-y-4">
             <div className="flex flex-col gap-2">
               <label className="text-xs text-neutral-400 font-semibold uppercase">Product Title</label>
@@ -164,40 +238,125 @@ const AddProduct = () => {
           </div>
         </div>
 
-        {/* Images Upload Link Card */}
-        <div className="bg-neutral-900 border border-white/5 p-6 rounded-2xl space-y-4">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-400">Product Images (URLs)</h3>
-          
-          <div className="flex gap-3">
-            <input
-              type="text"
-              value={imageInput}
-              onChange={(e) => setImageInput(e.target.value)}
-              placeholder="Paste image URL (https://...)"
-              className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white transition duration-200 text-white"
-            />
-            <button
-              type="button"
-              onClick={handleAddImage}
-              className="px-4 py-3 bg-white text-black font-bold rounded-xl flex items-center justify-center hover:bg-neutral-200 transition duration-200 cursor-pointer"
-            >
-              <Plus size={18} />
-            </button>
+        {/* Image Upload Card */}
+        <div className="bg-neutral-900 border border-white/5 p-6 rounded-2xl space-y-5">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-400">
+              Product Images ({images.length}/5)
+            </h3>
+            <div className="flex bg-black rounded-xl border border-white/10 overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setUploadMode("file")}
+                className={`px-4 py-1.5 text-xs font-semibold transition ${
+                  uploadMode === "file"
+                    ? "bg-white text-black"
+                    : "text-neutral-400 hover:text-white"
+                }`}
+              >
+                Upload File
+              </button>
+              <button
+                type="button"
+                onClick={() => setUploadMode("url")}
+                className={`px-4 py-1.5 text-xs font-semibold transition ${
+                  uploadMode === "url"
+                    ? "bg-white text-black"
+                    : "text-neutral-400 hover:text-white"
+                }`}
+              >
+                Paste URL
+              </button>
+            </div>
           </div>
 
-          {/* List of current image links */}
+          {uploadMode === "file" ? (
+            <>
+              {/* Drag & Drop Zone */}
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+                className={`relative flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-dashed cursor-pointer transition-all duration-300 ${
+                  dragActive
+                    ? "border-white bg-white/5 scale-[1.01]"
+                    : "border-white/10 hover:border-white/30 hover:bg-white/[0.02]"
+                }`}
+              >
+                {uploading ? (
+                  <>
+                    <Loader2 size={32} className="text-white animate-spin" />
+                    <p className="text-sm text-neutral-400">Uploading to cloud...</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+                      <ImagePlus size={24} className="text-neutral-400" />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-white">
+                        Drag & drop images here, or <span className="text-blue-400 underline">browse files</span>
+                      </p>
+                      <p className="text-[10px] text-neutral-500 mt-1">
+                        JPG, PNG, WebP, AVIF — Max 5MB per file — Up to 5 images
+                      </p>
+                    </div>
+                  </>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/avif"
+                  multiple
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+              </div>
+            </>
+          ) : (
+            /* URL Paste Mode */
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={imageInput}
+                onChange={(e) => setImageInput(e.target.value)}
+                placeholder="Paste image URL (https://...)"
+                className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white transition duration-200 text-white"
+              />
+              <button
+                type="button"
+                onClick={handleAddImageUrl}
+                className="px-5 py-3 bg-white text-black font-bold rounded-xl flex items-center justify-center hover:bg-neutral-200 transition duration-200 cursor-pointer text-sm"
+              >
+                Add
+              </button>
+            </div>
+          )}
+
+          {/* Preview of uploaded images */}
           {images.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 pt-3">
               {images.map((img, index) => (
-                <div key={index} className="relative group h-24 rounded-xl overflow-hidden border border-white/10 bg-black">
-                  <img src={img} alt="preview" className="h-full w-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveImage(index)}
-                    className="absolute top-1.5 right-1.5 h-6 w-6 bg-red-500 rounded-full flex items-center justify-center text-white hover:bg-red-600 transition"
-                  >
-                    <X size={12} />
-                  </button>
+                <div
+                  key={index}
+                  className="relative group aspect-square rounded-2xl overflow-hidden border border-white/10 bg-black"
+                >
+                  <img src={img} alt={`Product ${index + 1}`} className="h-full w-full object-cover" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(index)}
+                      className="h-8 w-8 bg-red-500 rounded-full flex items-center justify-center text-white hover:bg-red-600 transition"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                  {index === 0 && (
+                    <span className="absolute top-2 left-2 bg-white text-black text-[9px] font-bold px-1.5 py-0.5 rounded-md uppercase">
+                      Cover
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
@@ -214,7 +373,7 @@ const AddProduct = () => {
           </Link>
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || uploading}
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-black font-semibold text-sm rounded-xl hover:bg-neutral-200 transition duration-200 disabled:opacity-50 cursor-pointer"
           >
             <Save size={16} />
