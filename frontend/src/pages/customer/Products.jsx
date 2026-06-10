@@ -72,21 +72,27 @@ const Products = () => {
     if (user) dispatch(fetchWishlist());
   }, [user, dispatch]);
 
+  const userKey = user ? `recent_products_${user._id}` : "recent_products_guest";
+
   useEffect(() => {
-    const ids = JSON.parse(localStorage.getItem(RECENT_KEY)) || [];
-    if (!ids.length) return;
+    const ids = JSON.parse(localStorage.getItem(userKey)) || [];
+    if (!ids.length) {
+      setRecentProducts([]);
+      return;
+    }
 
     api.get("/products", { params: { ids: ids.join(",") } })
       .then((res) => setRecentProducts(res.data.data || []))
       .catch(() => {});
-  }, []);
+  }, [userKey]);
 
   const saveRecent = (id) => {
-    let list = JSON.parse(localStorage.getItem(RECENT_KEY)) || [];
+    let list = JSON.parse(localStorage.getItem(userKey)) || [];
     list = list.filter((x) => x !== id);
     list.unshift(id);
-    localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, 6)));
+    localStorage.setItem(userKey, JSON.stringify(list.slice(0, 6)));
   };
+
 
   const updateParam = (key, value) => {
     const p = new URLSearchParams(params);

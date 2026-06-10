@@ -1,6 +1,7 @@
 import React from "react";  
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Navbar from "../../components/layout/Navbar";
 import api from "../../utils/api";
 import { useCart } from "../../context/CartContext";
@@ -10,6 +11,7 @@ const ProductDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { addToCart, buyNow } = useCart();
+  const user = useSelector((state) => state.auth.user);
 
   const [product, setProduct] = useState(null);
   const [activeImage, setActiveImage] = useState(0);
@@ -23,6 +25,7 @@ const ProductDetails = () => {
       navigate("/login");
     }
   };
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -43,6 +46,17 @@ const ProductDetails = () => {
       fetchProduct();
     }
   }, [id]);
+
+  // Save product to recently viewed list (user-specific namespaced)
+  useEffect(() => {
+    if (!product?._id) return;
+    const userKey = user ? `recent_products_${user._id}` : "recent_products_guest";
+    let list = JSON.parse(localStorage.getItem(userKey)) || [];
+    list = list.filter((x) => x !== product._id);
+    list.unshift(product._id);
+    localStorage.setItem(userKey, JSON.stringify(list.slice(0, 6)));
+  }, [product, user]);
+
 
   if (loading) {
     return (

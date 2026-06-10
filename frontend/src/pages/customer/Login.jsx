@@ -30,14 +30,19 @@ const Login = () => {
       const res = await api.post("/auth/login", data);
       localStorage.setItem("token", res.data.token);
 
-      dispatch(
-        loginSuccess({
-          user: res.data.data,
-          token: res.data.token,
-        }),
-      );
+      const loggedUser = res.data.data;
+      dispatch(loginSuccess({ user: loggedUser, token: res.data.token }));
+
       toast.success("Login successful");
-      navigate(redirectTo, { replace: true });
+
+      // Role-based redirect
+      if (loggedUser.role === "ADMIN") {
+        navigate("/admin/dashboard", { replace: true });
+      } else if (loggedUser.role === "RETAILER") {
+        navigate("/retailer/dashboard", { replace: true });
+      } else {
+        navigate(redirectTo, { replace: true });
+      }
     } catch (err) {
       toast.error("Invalid email or password");
       setError(err.response?.data?.message || "Invalid email or password");

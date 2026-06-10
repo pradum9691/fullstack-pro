@@ -53,6 +53,7 @@ const Navbar = () => {
     user && { name: "Orders", path: "/orders" },
     user && { name: "Profile", path: "/profile" },
     user && user.role === "ADMIN" && { name: "Admin Panel", path: "/admin/dashboard" },
+    user && user.role === "RETAILER" && { name: "Retailer Panel", path: "/retailer/dashboard" },
     { name: "Contact", path: "/contact" },
   ].filter(Boolean);
 
