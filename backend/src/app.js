@@ -24,15 +24,20 @@ import passport from "./config/passport.js";
 const app = express();
 app.use(passport.initialize());
 
-// Express 5 query getter compatibility patch (allows Passport and other packages to mutate req.query)
+// Express 5 query getter compatibility patch (allows Passport, mongoSanitize, and other packages to mutate req.query)
 app.use((req, res, next) => {
-  if (Object.getOwnPropertyDescriptor(req, "query")?.get) {
+  if (req.query) {
     const originalQuery = req.query;
-    delete req.query;
-    req.query = { ...originalQuery };
+    Object.defineProperty(req, "query", {
+      value: { ...originalQuery },
+      writable: true,
+      configurable: true,
+      enumerable: true,
+    });
   }
   next();
 });
+
 
 
 const allowedOrigins = [
