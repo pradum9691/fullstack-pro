@@ -31,6 +31,7 @@ const GoogleSuccess = lazy(() => import("../pages/customer/GoogleSuccess"));
 const ChangePassword = lazy(() => import("../pages/customer/ChangePassword"));
 const ResetPassword = lazy(() => import("../pages/customer/ResetPassword"));
 const ForgotPassword = lazy(() => import("../pages/customer/ForgotPassword"));
+const ApplyRetailer = lazy(() => import("../pages/customer/ApplyRetailer"));
 const NotFound = lazy(() => import("../pages/customer/NotFound"));
 
 // Admin Pages
@@ -68,6 +69,7 @@ const AppRoutes = () => {
             <Route path="/addresses" element={<Addresses />} />
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/apply-retailer" element={<ApplyRetailer />} />
           </Route>
         </Route>
         <Route

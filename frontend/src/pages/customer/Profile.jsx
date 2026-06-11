@@ -141,9 +141,18 @@ const Profile = () => {
           </div>
  
           <div className="mt-8 flex flex-col items-center gap-3">
+            {profile.role === "CUSTOMER" && (
+              <button
+                onClick={() => navigate("/apply-retailer")}
+                className="w-full max-w-sm px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg hover:shadow-indigo-500/25 transition-all transform hover:-translate-y-0.5"
+              >
+                Become a Retailer
+              </button>
+            )}
+            
             <button
               onClick={() => navigate("/addresses")}
-              className="px-6 py-2 rounded-full border border-black/20 dark:border-white/20 text-sm hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition"
+              className="w-full max-w-sm px-6 py-2 rounded-xl border border-black/20 dark:border-white/20 text-sm hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition"
             >
               Manage Delivery Address
             </button>
