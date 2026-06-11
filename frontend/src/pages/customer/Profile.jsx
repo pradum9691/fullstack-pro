@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import api from "../../utils/api";
-import { User, Mail, Shield } from "lucide-react";
+import { User, Mail, Shield, Edit3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
+import Card from "../../components/ui/Card";
+import Loader from "../../components/ui/Loader";
+import { motion } from "framer-motion";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -19,8 +24,7 @@ const Profile = () => {
       try {
         const res = await api.get("/auth/me");
         setProfile(res.data.data);
-        setName(res.data.data.name);
-        setName("")
+        setName("");
       } catch (err) {
         console.error("Profile load failed", err);
         setError("Session expired. Please login again.");
@@ -32,19 +36,13 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
- 
-
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black text-black dark:text-white">
-        <div className="w-8 h-8 rounded-full border-2 border-black/20 dark:border-white/20 border-t-black dark:border-t-white animate-spin" />
-      </div>
-    );
+    return <Loader fullScreen text="Loading Profile..." />;
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black text-red-500 text-sm">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-neutral-950 text-rose-500 text-sm font-medium">
         {error}
       </div>
     );
@@ -64,113 +62,119 @@ const Profile = () => {
     : "/avatar.png";
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white pt-28 px-6">
+    <div className="min-h-screen bg-neutral-950 pt-28 px-6 pb-20">
       <div className="max-w-4xl mx-auto">
-        <div className="rounded-3xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 p-10 shadow-xl">
-         
-          <div className="flex flex-col items-center">
-            <img
-              src={avatar}
-              onError={(e) => (e.target.src = "/avatar.png")}
-              className="w-40 h-40 rounded-full object-cover border-4 border-white dark:border-black shadow-lg mb-4"
-            />
-            <h1 className="text-2xl font-semibold">{fullName}</h1>
-            <p className="text-sm opacity-60">{profile.email}</p>
-
-            <span className="mt-3 px-4 py-1 rounded-full text-xs bg-black/10 dark:bg-white/10 capitalize">
-              {profile.role || "customer"}
-            </span>
-          </div>
- 
-          <div className="grid md:grid-cols-3 gap-6 mt-10">
-            <div className="rounded-2xl p-5 border border-black/10 dark:border-white/10">
-              <User size={20} className="opacity-70 mb-2" />
-              <p className="text-xs opacity-60">Full Name</p>
-              <p className="font-medium">{fullName}</p>
-            </div>
-
-            <div className="rounded-2xl p-5 border border-black/10 dark:border-white/10">
-              <Mail size={20} className="opacity-70 mb-2" />
-              <p className="text-xs opacity-60">Email</p>
-              <p className="font-medium break-all">{profile.email}</p>
-            </div>
-
-            <div className="rounded-2xl p-5 border border-black/10 dark:border-white/10">
-              <Shield size={20} className="opacity-70 mb-2" />
-              <p className="text-xs opacity-60">Role</p>
-              <p className="font-medium capitalize">
-                {profile.role || "customer"}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-10 max-w-md mx-auto space-y-3">
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg bg-transparent border border-black/20 dark:border-white/20 outline-none"
-              placeholder="Your name"
-            />
-
-            <button
-              disabled={saving}
-              onClick={async () => {
-                try {
-                  setSaving(true);
-                  const res = await api.put("/auth/profile", { name });
-                  setProfile(res.data.data);
-                  setName("")
-                  toast.success("Profile updated successfully");
-                } catch {
-                  toast.error(
-                    err.response?.data?.message || "Profile update failed",
-                  );
-                } finally {
-                  setSaving(false);
-                }
-              }}
-              className="w-full px-4 py-2 rounded-lg border border-black/30 dark:border-white/30 text-sm hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition disabled:opacity-50"
-            >
-              {saving ? "Saving..." : "Save Profile"}
-            </button>
-          </div>
- 
-          <div className="mt-10 rounded-2xl p-5 border border-black/10 dark:border-white/10">
-            <p className="text-xs opacity-60 mb-1">User ID</p>
-            <p className="text-xs break-all opacity-80">{profile._id}</p>
-          </div>
- 
-          <div className="mt-8 flex flex-col items-center gap-3">
-            {profile.role === "CUSTOMER" && (
-              <button
-                onClick={() => navigate("/apply-retailer")}
-                className="w-full max-w-sm px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg hover:shadow-indigo-500/25 transition-all transform hover:-translate-y-0.5"
-              >
-                Become a Retailer
-              </button>
-            )}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <Card className="p-8 sm:p-12 overflow-hidden border-white/5">
+            {/* Background Accent */}
+            <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 blur-3xl rounded-full opacity-50" />
             
-            <button
-              onClick={() => navigate("/addresses")}
-              className="w-full max-w-sm px-6 py-2 rounded-xl border border-black/20 dark:border-white/20 text-sm hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition"
-            >
-              Manage Delivery Address
-            </button>
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="relative group">
+                <img
+                  src={avatar}
+                  onError={(e) => (e.target.src = "/avatar.png")}
+                  className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-neutral-900 shadow-2xl mb-4 transition-transform group-hover:scale-105"
+                />
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">{fullName}</h1>
+              <p className="text-sm text-neutral-400 mt-1">{profile.email}</p>
 
-            <button
-              onClick={() => navigate("/change-password")}
-              className="text-sm underline opacity-70 hover:opacity-100"
-            >
-              Change Password
-            </button>
-          </div>
-        </div>
+              <span className="mt-4 px-5 py-1.5 rounded-full text-xs font-semibold tracking-wider bg-white/10 text-white capitalize border border-white/10 shadow-inner">
+                {profile.role || "customer"}
+              </span>
+            </div>
+   
+            <div className="grid sm:grid-cols-3 gap-4 mt-12">
+              <div className="rounded-2xl p-5 border border-white/5 bg-white/5 hover:bg-white/10 transition-colors">
+                <User size={20} className="text-indigo-400 mb-3" />
+                <p className="text-xs font-medium uppercase tracking-wider text-neutral-500 mb-1">Full Name</p>
+                <p className="font-semibold text-white">{fullName}</p>
+              </div>
 
-        {user && (
-          <p className="mt-6 text-xs opacity-50 text-center">
-            Logged in as <span className="opacity-90">{user.email}</span>
-          </p>
-        )}
+              <div className="rounded-2xl p-5 border border-white/5 bg-white/5 hover:bg-white/10 transition-colors">
+                <Mail size={20} className="text-purple-400 mb-3" />
+                <p className="text-xs font-medium uppercase tracking-wider text-neutral-500 mb-1">Email</p>
+                <p className="font-semibold text-white truncate">{profile.email}</p>
+              </div>
+
+              <div className="rounded-2xl p-5 border border-white/5 bg-white/5 hover:bg-white/10 transition-colors">
+                <Shield size={20} className="text-emerald-400 mb-3" />
+                <p className="text-xs font-medium uppercase tracking-wider text-neutral-500 mb-1">Role</p>
+                <p className="font-semibold text-white capitalize">
+                  {profile.role || "customer"}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-12 max-w-md mx-auto">
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <Input
+                    type="text"
+                    icon={Edit3}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Update your name"
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  disabled={saving}
+                  isLoading={saving}
+                  onClick={async () => {
+                    if (!name.trim()) return toast.error("Name cannot be empty");
+                    try {
+                      setSaving(true);
+                      const res = await api.put("/auth/profile", { name });
+                      setProfile(res.data.data);
+                      setName("");
+                      toast.success("Profile updated successfully");
+                    } catch (err) {
+                      toast.error(
+                        err.response?.data?.message || "Profile update failed",
+                      );
+                    } finally {
+                      setSaving(false);
+                    }
+                  }}
+                  className="h-12 border-white/20 text-white hover:bg-white hover:text-black"
+                >
+                  Save
+                </Button>
+              </div>
+            </div>
+   
+            <div className="mt-12 pt-10 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="flex flex-col gap-3 w-full sm:w-auto">
+                {profile.role === "CUSTOMER" && (
+                  <Button
+                    variant="gradient"
+                    onClick={() => navigate("/apply-retailer")}
+                  >
+                    Become a Retailer
+                  </Button>
+                )}
+                <Button
+                  variant="secondary"
+                  onClick={() => navigate("/addresses")}
+                >
+                  Manage Delivery Address
+                </Button>
+              </div>
+
+              <div className="flex flex-col items-center sm:items-end gap-2">
+                <button
+                  onClick={() => navigate("/change-password")}
+                  className="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
+                >
+                  Change Password
+                </button>
+                <p className="text-xs text-neutral-600 font-mono">ID: {profile._id}</p>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
       </div>
     </div>
   );

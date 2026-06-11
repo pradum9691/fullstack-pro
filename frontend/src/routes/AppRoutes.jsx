@@ -15,24 +15,25 @@ const RetailerLayout = lazy(() => import("../layouts/RetailerLayout"));
 const Home = lazy(() => import("../pages/customer/Home"));
 const Products = lazy(() => import("../pages/customer/Products"));
 const Cart = lazy(() => import("../pages/customer/Cart"));
-const Login = lazy(() => import("../pages/customer/Login"));
-const Register = lazy(() => import("../pages/customer/Register"));
 const Checkout = lazy(() => import("../pages/customer/Checkout"));
 const Orders = lazy(() => import("../pages/customer/Orders"));
 const Contact = lazy(() => import("../pages/customer/Contact"));
 const Profile = lazy(() => import("../pages/customer/Profile"));
-const OrderSuccess = lazy(() => import("../pages/customer/OrderSuccess"));
-const OrderFailed = lazy(() => import("../pages/customer/OrderFailed"));
+const OrderStatus = lazy(() => import("../pages/customer/OrderStatus"));
 const Addresses = lazy(() => import("../pages/customer/Addresses"));
 const OrderDetails = lazy(() => import("../pages/customer/OrderDetails"));
 const ProductDetails = lazy(() => import("../pages/customer/ProductDetails"));
 const Wishlist = lazy(() => import("../pages/customer/Wishlist"));
 const GoogleSuccess = lazy(() => import("../pages/customer/GoogleSuccess"));
-const ChangePassword = lazy(() => import("../pages/customer/ChangePassword"));
-const ResetPassword = lazy(() => import("../pages/customer/ResetPassword"));
-const ForgotPassword = lazy(() => import("../pages/customer/ForgotPassword"));
 const ApplyRetailer = lazy(() => import("../pages/customer/ApplyRetailer"));
 const NotFound = lazy(() => import("../pages/customer/NotFound"));
+
+// Auth Pages
+const Login = lazy(() => import("../pages/auth/Login"));
+const Register = lazy(() => import("../pages/auth/Register"));
+const ChangePassword = lazy(() => import("../pages/auth/ChangePassword"));
+const ResetPassword = lazy(() => import("../pages/auth/ResetPassword"));
+const ForgotPassword = lazy(() => import("../pages/auth/ForgotPassword"));
 
 // Admin Pages
 const AdminDashboard = lazy(() => import("../pages/admin/Dashboard"));
@@ -64,8 +65,7 @@ const AppRoutes = () => {
             <Route path="/orders" element={<Orders />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/orders/:id" element={<OrderDetails />} />
-            <Route path="/order-success/:id" element={<OrderSuccess />} />
-            <Route path="/order-failed" element={<OrderFailed />} />
+            <Route path="/order/:status" element={<OrderStatus />} />
             <Route path="/addresses" element={<Addresses />} />
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/change-password" element={<ChangePassword />} />

@@ -70,11 +70,11 @@ const Checkout = () => {
       const orderId = res.data.data._id;
       await refreshCart();
       toast.success("Order placed successfully");
-      navigate("/orders");;
+      navigate(`/order/success?orderId=${orderId}`);
     } catch (err) {
       toast.error("Order failed");
       console.error("ORDER ERROR", err.response?.data || err.message);
-      navigate("/order-failed");
+      navigate("/order/failed");
     } finally {
       setPlacing(false);
     }
