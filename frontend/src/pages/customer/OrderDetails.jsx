@@ -1,23 +1,29 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
-import Navbar from "../../components/layout/Navbar";
+import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+import { MapPin, Phone, Calendar, ArrowLeft, Download, RefreshCw } from "lucide-react";
 
-const statusColor = (status) => {
+const getStatusBadge = (status) => {
   switch (status) {
     case "PENDING_PAYMENT":
-      return "bg-yellow-100 text-yellow-700";
+      return "badge-amber";
     case "PAID":
-      return "bg-green-100 text-green-700";
+      return "badge-indigo";
     case "SHIPPED":
-      return "bg-blue-100 text-blue-700";
+      return "badge-indigo";
     case "DELIVERED":
-      return "bg-emerald-100 text-emerald-700";
+      return "badge-emerald";
     case "CANCELLED":
-      return "bg-red-100 text-red-700";
+      return "badge-rose";
     default:
-      return "bg-gray-100 text-gray-700";
+      return "badge-neutral";
   }
+};
+
+const getStatusLabel = (status) => {
+  return status?.replace("_", " ");
 };
 
 const OrderDetails = () => {
@@ -26,6 +32,7 @@ const OrderDetails = () => {
 
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [cancelling, setCancelling] = useState(false);
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -43,22 +50,40 @@ const OrderDetails = () => {
 
     fetchOrder();
   }, [id]);
+
+  const handleCancelOrder = async () => {
+    if (window.confirm("Are you sure you want to cancel this order?")) {
+      try {
+        setCancelling(true);
+        await api.post(`/orders/my/${order._id}/cancel`);
+        toast.success("Order cancelled successfully & refund initiated 💸");
+        // Reload order data
+        const res = await api.get(`/orders/my/${id}`);
+        setOrder(res.data.data);
+      } catch (err) {
+        toast.error(err.response?.data?.message || "Cancellation failed");
+      } finally {
+        setCancelling(false);
+      }
+    }
+  };
  
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-white">
+        <div className="w-10 h-10 border-2 border-white/20 border-t-indigo-500 rounded-full animate-spin mb-4" />
+        <p className="text-sm text-neutral-400 animate-pulse">Loading order details...</p>
       </div>
     );
   }
  
   if (!order) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <p className="text-sm opacity-60 mb-4">Order not found</p>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-white p-6">
+        <p className="text-sm text-neutral-400 mb-4">Order not found</p>
         <button
           onClick={() => navigate("/orders")}
-          className="px-6 py-3 rounded-full bg-black text-white"
+          className="px-6 py-2.5 bg-white text-black font-semibold text-sm rounded-xl hover:bg-neutral-200 transition"
         >
           Back to Orders
         </button>
@@ -67,171 +92,161 @@ const OrderDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
-      <Navbar />
-
-      <div className="max-w-5xl mx-auto px-6 pt-28 pb-24 space-y-12">
- 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight">
-              Order Details
-            </h1>
-            <p className="text-sm opacity-60 mt-1">Order ID: {order._id}</p>
-          </div>
-
-          <span
-            className={`px-4 py-2 rounded-full text-xs font-medium ${statusColor(
-              order.status,
-            )}`}
-          >
-            {order.status.replaceAll("_", " ")}
-          </span>
-        </div>
- 
-        <div className="grid sm:grid-cols-3 gap-6">
-          {[
-            {
-              label: "Order Date",
-              value: new Date(order.createdAt).toDateString(),
-            },
-            { label: "Items", value: order.items.length },
-            { label: "Total Amount", value: `₹ ${order.totalAmount}` },
-          ].map((s, i) => (
-            <div
-              key={i}
-              className="rounded-2xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 p-6 shadow-sm"
-            >
-              <p className="text-xs opacity-60">{s.label}</p>
-              <p className="text-sm font-medium mt-1">{s.value}</p>
-            </div>
-          ))}
-        </div>
-
-     
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Items</h2>
-
-          <div className="space-y-4">
-            {order.items.map((item, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between gap-6 rounded-2xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 p-5 hover:shadow-md transition"
-              >
-                <div>
-                  <p className="text-sm font-medium">
-                    {item.product?.name || "Product"}
-                  </p>
-                  <p className="text-xs opacity-60 mt-1">
-                    Qty: {item.quantity}
-                  </p>
-                </div>
-
-                <div className="text-sm font-medium">₹ {item.subtotal}</div>
-              </div>
-            ))}
-          </div>
-        </div>
- 
-        <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 p-6">
-          <h2 className="text-lg font-semibold mb-4">Order Tracking</h2>
-
-          <div className="space-y-4">
-            {order.statusHistory?.map((s, i) => (
-              <div key={i} className="flex gap-4">
-                <div className="w-2 h-2 mt-2 rounded-full bg-black dark:bg-white" />
-                <div>
-                  <p className="text-sm font-medium">
-                    {s.status.replaceAll("_", " ")}
-                  </p>
-                  <p className="text-xs opacity-60">
-                    {new Date(s.timestamp).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
- 
-        {order.status === "PAID" && (
-          <button
-            onClick={async () => {
-              try {
-                await api.post(`/orders/my/${order._id}/cancel`);
-                alert("Order cancelled & refund started 💸");
-                window.location.reload();
-              } catch (err) {
-                alert(err.response?.data?.message || "Cancel failed");
-              }
-            }}
-            className="px-6 py-3 rounded-full border border-red-500 text-red-600 text-sm hover:bg-red-500 hover:text-white transition"
-          >
-            Cancel Order
-          </button>
-        )}
- 
-        <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 p-6">
-          <h2 className="text-lg font-semibold mb-3">Delivery Address</h2>
-
-          <div className="text-sm opacity-80 space-y-1">
-            <p className="font-medium">{order.address?.name}</p>
-            <p>{order.address?.addressLine}</p>
-            <p>
-              {order.address?.city}, {order.address?.state} –{" "}
-              {order.address?.pincode}
-            </p>
-            <p>📞 {order.address?.phone}</p>
-          </div>
-        </div>
-        <button
-          onClick={() => {
-            window.open(
-              `${import.meta.env.VITE_API_URL}/orders/my/${order._id}/invoice?token=${localStorage.getItem("token")}`,
-              "_blank",
-            );
-          }}
-          className="
-    group flex items-center gap-2
-    px-7 py-3 rounded-full
-    border border-black/20 dark:border-white/20
-    text-sm font-medium
-    bg-black text-white
-    dark:bg-white dark:text-black
-    hover:scale-[1.03]
-    hover:shadow-lg
-    transition-all duration-200
-  "
-        >
-          <svg
-            className="w-4 h-4 opacity-80 group-hover:opacity-100 transition"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path d="M12 3v12m0 0l4-4m-4 4l-4-4" />
-            <path d="M4 17h16" />
-          </svg>
-          Download Invoice
-        </button>
- 
-        <div className="flex flex-col sm:flex-row gap-4">
+    <motion.div 
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="max-w-4xl mx-auto px-6 py-12 text-white"
+    >
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 pb-6 border-b border-white/5">
+        <div className="flex items-center gap-4">
           <button
             onClick={() => navigate("/orders")}
-            className="px-6 py-3 rounded-full border border-black/30 dark:border-white/30 text-sm hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition"
+            className="h-10 w-10 bg-[#111111] border border-white/10 rounded-full flex items-center justify-center text-neutral-400 hover:text-white transition duration-200 cursor-pointer"
           >
-            Back to Orders
+            <ArrowLeft size={16} />
           </button>
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight gradient-text">
+              Order Invoice
+            </h1>
+            <p className="text-xs text-neutral-500 font-mono mt-1">ID: #{order._id}</p>
+          </div>
+        </div>
 
-          <button
-            onClick={() => navigate("/products")}
-            className="px-6 py-3 rounded-full bg-black text-white dark:bg-white dark:text-black text-sm"
-          >
-            Continue Shopping
-          </button>
+        <div className="flex items-center gap-3 self-end sm:self-auto">
+          <span className={`badge ${getStatusBadge(order.status)}`}>
+            {getStatusLabel(order.status)}
+          </span>
         </div>
       </div>
-    </div>
+ 
+      {/* Order Stats Overview */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+        <div className="bg-[#111111] border border-white/5 p-5 rounded-2xl shadow-xl">
+          <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Placed On</span>
+          <p className="text-sm font-semibold mt-1 text-white">
+            {new Date(order.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+          </p>
+        </div>
+        <div className="bg-[#111111] border border-white/5 p-5 rounded-2xl shadow-xl">
+          <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Total Items</span>
+          <p className="text-sm font-semibold mt-1 text-white">{order.items?.length || 0} Units</p>
+        </div>
+        <div className="bg-[#111111] border border-white/5 p-5 rounded-2xl shadow-xl col-span-2 sm:col-span-1">
+          <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Total Paid</span>
+          <p className="text-sm font-bold mt-1 text-indigo-400">
+            ₹{order.totalAmount?.toLocaleString("en-IN")}
+          </p>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-8">
+        {/* Left Column: Items and details (2/3 width) */}
+        <div className="md:col-span-2 space-y-6">
+          {/* Items card */}
+          <div className="bg-[#111111] border border-white/5 rounded-2xl overflow-hidden shadow-xl p-6 space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400 border-b border-white/5 pb-3">Products in Order</h3>
+            <div className="divide-y divide-white/5">
+              {order.items?.map((item, idx) => (
+                <div key={idx} className="py-4 flex items-center justify-between gap-4 first:pt-0 last:pb-0">
+                  <div className="flex items-center gap-3">
+                    <div className="h-12 w-12 rounded-xl bg-neutral-800 flex items-center justify-center overflow-hidden border border-white/10 flex-shrink-0">
+                      {item.product?.images?.[0] ? (
+                        <img src={item.product.images[0]} alt="Product" className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="text-[10px] text-neutral-500 font-bold">No img</span>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-white">{item.product?.name || "Product"}</p>
+                      <p className="text-xs text-neutral-500 mt-0.5">Qty: {item.quantity} × ₹{item.price?.toLocaleString("en-IN")}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm font-semibold text-white">₹{item.subtotal?.toLocaleString("en-IN")}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Row */}
+          <div className="flex flex-wrap gap-4 items-center">
+            <button
+              onClick={() => {
+                window.open(
+                  `${import.meta.env.VITE_API_URL}/orders/my/${order._id}/invoice?token=${localStorage.getItem("token")}`,
+                  "_blank",
+                );
+              }}
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#111111] border border-white/10 rounded-xl text-xs font-semibold hover:bg-white hover:text-black transition-all duration-300 hover:-translate-y-0.5 cursor-pointer shadow-md"
+            >
+              <Download size={14} />
+              <span>Download Invoice</span>
+            </button>
+
+            {order.status === "PAID" && (
+              <button
+                disabled={cancelling}
+                onClick={handleCancelOrder}
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-500 hover:text-white transition-all duration-300 hover:-translate-y-0.5 cursor-pointer shadow-md disabled:opacity-50"
+              >
+                <span>{cancelling ? "Cancelling..." : "Cancel Order"}</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Right Column: Address and Tracking (1/3 width) */}
+        <div className="space-y-6">
+          {/* Shipping Address */}
+          <div className="bg-[#111111] border border-white/5 p-6 rounded-2xl shadow-xl space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400 border-b border-white/5 pb-3 flex items-center gap-1.5">
+              <MapPin size={13} className="text-indigo-400" />
+              <span>Shipping Address</span>
+            </h3>
+            <div className="text-xs text-neutral-300 space-y-1.5">
+              <p className="font-bold text-white text-sm">{order.address?.name}</p>
+              <p>{order.address?.addressLine}</p>
+              <p>{order.address?.city}, {order.address?.state} - {order.address?.pincode}</p>
+              <p className="flex items-center gap-1 text-neutral-400 pt-1">
+                <Phone size={12} />
+                <span>{order.address?.phone}</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Timeline Tracking */}
+          <div className="bg-[#111111] border border-white/5 p-6 rounded-2xl shadow-xl space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400 border-b border-white/5 pb-3">Delivery Timeline</h3>
+            <div className="space-y-4">
+              {order.statusHistory && order.statusHistory.length > 0 ? (
+                order.statusHistory.map((history, idx) => (
+                  <div key={idx} className="flex gap-3 text-xs">
+                    <div className="flex flex-col items-center">
+                      <div className="h-2 w-2 rounded-full bg-indigo-500 ring-4 ring-indigo-500/20 mt-1.5" />
+                      {idx !== order.statusHistory.length - 1 && (
+                        <div className="w-0.5 flex-1 bg-white/5 my-1" />
+                      )}
+                    </div>
+                    <div className="flex-1 space-y-0.5 pb-2">
+                      <p className="font-semibold text-white uppercase tracking-wider">
+                        {getStatusLabel(history.status)}
+                      </p>
+                      <p className="text-[10px] text-neutral-500">
+                        {new Date(history.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-xs text-neutral-500 italic">No tracking info logged.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 

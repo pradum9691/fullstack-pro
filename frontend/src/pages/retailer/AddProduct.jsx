@@ -2,7 +2,8 @@ import { useState, useRef } from "react";
 import api from "../../utils/api";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Save, X, Upload, ImagePlus, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, X, ImagePlus, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -145,29 +146,34 @@ const AddProduct = () => {
   };
 
   return (
-    <div className="space-y-8 pb-12 bg-neutral-950 text-white max-w-4xl">
+    <motion.div 
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-8 pb-12 text-white max-w-4xl"
+    >
       {/* Title */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         <Link
           to="/retailer/products"
-          className="h-10 w-10 bg-neutral-900 border border-white/10 rounded-full flex items-center justify-center text-neutral-400 hover:text-white transition duration-200"
+          className="h-10 w-10 bg-[#111111] border border-white/10 rounded-full flex items-center justify-center text-neutral-400 hover:text-white transition duration-200"
         >
           <ArrowLeft size={16} />
         </Link>
         <div>
-          <h1 className="text-3xl font-semibold tracking-wide">Add New Product</h1>
+          <h1 className="text-3xl font-semibold tracking-tight gradient-text">Add New Product</h1>
           <p className="text-sm text-neutral-400 mt-2">Submit a product to request catalog addition.</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Core details card */}
-        <div className="bg-neutral-900 border border-white/5 p-6 rounded-2xl space-y-6">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-400 border-b border-white/5 pb-3">Product Description</h3>
+        <div className="bg-[#111111] border border-white/5 p-6 rounded-2xl space-y-6 shadow-xl">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-400 border-b border-white/5 pb-3">Product Specifications</h3>
 
           <div className="space-y-4">
             <div className="flex flex-col gap-2">
-              <label className="text-xs text-neutral-400 font-semibold uppercase">Product Title</label>
+              <label className="text-xs text-neutral-400 font-semibold uppercase tracking-wider">Product Title</label>
               <input
                 required
                 type="text"
@@ -175,12 +181,12 @@ const AddProduct = () => {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="e.g. Leather Minimalist Watch"
-                className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white transition duration-200 text-white"
+                className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500/50 transition duration-200 text-white placeholder-neutral-600"
               />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-xs text-neutral-400 font-semibold uppercase">Description (Min 10 chars)</label>
+              <label className="text-xs text-neutral-400 font-semibold uppercase tracking-wider">Description (Min 10 chars)</label>
               <textarea
                 required
                 rows="4"
@@ -188,7 +194,7 @@ const AddProduct = () => {
                 value={formData.description}
                 onChange={handleChange}
                 placeholder="Write description about core specifications, build quality, fabric types, etc..."
-                className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white transition duration-200 text-white resize-none"
+                className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500/50 transition duration-200 text-white resize-none placeholder-neutral-600"
               />
             </div>
           </div>
@@ -196,8 +202,8 @@ const AddProduct = () => {
 
         {/* Pricing and Stock Card */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-neutral-900 border border-white/5 p-6 rounded-2xl flex flex-col gap-2">
-            <label className="text-xs text-neutral-400 font-semibold uppercase">Price (INR)</label>
+          <div className="bg-[#111111] border border-white/5 p-6 rounded-2xl flex flex-col gap-2 shadow-xl">
+            <label className="text-xs text-neutral-400 font-semibold uppercase tracking-wider">Price (INR)</label>
             <input
               required
               type="number"
@@ -206,12 +212,12 @@ const AddProduct = () => {
               value={formData.price}
               onChange={handleChange}
               placeholder="1499"
-              className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white transition duration-200 text-white"
+              className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500/50 transition duration-200 text-white placeholder-neutral-600"
             />
           </div>
 
-          <div className="bg-neutral-900 border border-white/5 p-6 rounded-2xl flex flex-col gap-2">
-            <label className="text-xs text-neutral-400 font-semibold uppercase">Initial Stock (Units)</label>
+          <div className="bg-[#111111] border border-white/5 p-6 rounded-2xl flex flex-col gap-2 shadow-xl">
+            <label className="text-xs text-neutral-400 font-semibold uppercase tracking-wider">Initial Stock (Units)</label>
             <input
               required
               type="number"
@@ -220,12 +226,12 @@ const AddProduct = () => {
               value={formData.stock}
               onChange={handleChange}
               placeholder="50"
-              className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white transition duration-200 text-white"
+              className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500/50 transition duration-200 text-white placeholder-neutral-600"
             />
           </div>
 
-          <div className="bg-neutral-900 border border-white/5 p-6 rounded-2xl flex flex-col gap-2">
-            <label className="text-xs text-neutral-400 font-semibold uppercase">Category</label>
+          <div className="bg-[#111111] border border-white/5 p-6 rounded-2xl flex flex-col gap-2 shadow-xl">
+            <label className="text-xs text-neutral-400 font-semibold uppercase tracking-wider">Category</label>
             <input
               required
               type="text"
@@ -233,15 +239,15 @@ const AddProduct = () => {
               value={formData.category}
               onChange={handleChange}
               placeholder="e.g. Watches"
-              className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white transition duration-200 text-white"
+              className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500/50 transition duration-200 text-white placeholder-neutral-600"
             />
           </div>
         </div>
 
         {/* Image Upload Card */}
-        <div className="bg-neutral-900 border border-white/5 p-6 rounded-2xl space-y-5">
+        <div className="bg-[#111111] border border-white/5 p-6 rounded-2xl space-y-5 shadow-xl">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-400">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
               Product Images ({images.length}/5)
             </h3>
             <div className="flex bg-black rounded-xl border border-white/10 overflow-hidden">
@@ -271,49 +277,47 @@ const AddProduct = () => {
           </div>
 
           {uploadMode === "file" ? (
-            <>
-              {/* Drag & Drop Zone */}
-              <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
-                className={`relative flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-dashed cursor-pointer transition-all duration-300 ${
-                  dragActive
-                    ? "border-white bg-white/5 scale-[1.01]"
-                    : "border-white/10 hover:border-white/30 hover:bg-white/[0.02]"
-                }`}
-              >
-                {uploading ? (
-                  <>
-                    <Loader2 size={32} className="text-white animate-spin" />
-                    <p className="text-sm text-neutral-400">Uploading to cloud...</p>
-                  </>
-                ) : (
-                  <>
-                    <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                      <ImagePlus size={24} className="text-neutral-400" />
-                    </div>
-                    <div className="text-center">
-                      <p className="text-sm font-medium text-white">
-                        Drag & drop images here, or <span className="text-blue-400 underline">browse files</span>
-                      </p>
-                      <p className="text-[10px] text-neutral-500 mt-1">
-                        JPG, PNG, WebP, AVIF — Max 5MB per file — Up to 5 images
-                      </p>
-                    </div>
-                  </>
-                )}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/avif"
-                  multiple
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
-              </div>
-            </>
+            /* Drag & Drop Zone */
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={`relative flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-dashed cursor-pointer transition-all duration-300 ${
+                dragActive
+                  ? "border-indigo-500 bg-indigo-500/5 scale-[1.01]"
+                  : "border-white/10 hover:border-white/20 hover:bg-white/[0.02]"
+              }`}
+            >
+              {uploading ? (
+                <>
+                  <Loader2 size={32} className="text-indigo-400 animate-spin" />
+                  <p className="text-sm text-neutral-400 animate-pulse">Uploading to cloud...</p>
+                </>
+              ) : (
+                <>
+                  <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+                    <ImagePlus size={20} className="text-neutral-400" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-white">
+                      Drag & drop images here, or <span className="text-indigo-400 underline hover:text-indigo-300">browse files</span>
+                    </p>
+                    <p className="text-[10px] text-neutral-500 mt-1.5">
+                      JPG, PNG, WebP, AVIF — Max 5MB per file — Up to 5 images
+                    </p>
+                  </div>
+                </>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/avif"
+                multiple
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+            </div>
           ) : (
             /* URL Paste Mode */
             <div className="flex gap-3">
@@ -322,7 +326,7 @@ const AddProduct = () => {
                 value={imageInput}
                 onChange={(e) => setImageInput(e.target.value)}
                 placeholder="Paste image URL (https://...)"
-                className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white transition duration-200 text-white"
+                className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500/50 transition duration-200 text-white placeholder-neutral-600"
               />
               <button
                 type="button"
@@ -335,32 +339,37 @@ const AddProduct = () => {
           )}
 
           {/* Preview of uploaded images */}
-          {images.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 pt-3">
-              {images.map((img, index) => (
-                <div
-                  key={index}
-                  className="relative group aspect-square rounded-2xl overflow-hidden border border-white/10 bg-black"
-                >
-                  <img src={img} alt={`Product ${index + 1}`} className="h-full w-full object-cover" />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage(index)}
-                      className="h-8 w-8 bg-red-500 rounded-full flex items-center justify-center text-white hover:bg-red-600 transition"
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-                  {index === 0 && (
-                    <span className="absolute top-2 left-2 bg-white text-black text-[9px] font-bold px-1.5 py-0.5 rounded-md uppercase">
-                      Cover
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+          <AnimatePresence>
+            {images.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 pt-3">
+                {images.map((img, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="relative group aspect-square rounded-2xl overflow-hidden border border-white/10 bg-black"
+                  >
+                    <img src={img} alt={`Product ${index + 1}`} className="h-full w-full object-cover" />
+                    <div className="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(index)}
+                        className="h-8 w-8 bg-rose-500 rounded-full flex items-center justify-center text-white hover:bg-rose-600 transition"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                    {index === 0 && (
+                      <span className="absolute top-2 left-2 bg-indigo-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider">
+                        Cover
+                      </span>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Actions */}
@@ -374,14 +383,18 @@ const AddProduct = () => {
           <button
             type="submit"
             disabled={loading || uploading}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-black font-semibold text-sm rounded-xl hover:bg-neutral-200 transition duration-200 disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-black font-semibold text-sm rounded-xl hover:bg-neutral-200 transition-all duration-300 disabled:opacity-50 hover:shadow-lg hover:shadow-white/5 hover:-translate-y-0.5 cursor-pointer"
           >
-            <Save size={16} />
+            {loading ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Save size={16} />
+            )}
             <span>{loading ? "Saving..." : "Submit Product"}</span>
           </button>
         </div>
       </form>
-    </div>
+    </motion.div>
   );
 };
 

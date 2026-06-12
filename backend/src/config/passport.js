@@ -61,6 +61,6 @@ passport.use(
   ),
 );
 
-console.log("GOOGLE_CALLBACK_URL:", process.env.GOOGLE_CALLBACK_URL);
+
 
 export default passport;

@@ -28,7 +28,7 @@ export const getProducts = asyncHandler(async (req, res) => {
   }
 
   if (cached) {
-    console.log("Products from Redis");
+
     return res.json({ success: true, data: JSON.parse(cached) });
   }
 
@@ -72,7 +72,7 @@ export const getProducts = asyncHandler(async (req, res) => {
     console.error("Redis save failed:", error.message);
   }
 
-  console.log("🗄️ Products from MongoDB");
+
 
   res.json({
     success: true,
@@ -93,7 +93,7 @@ export const getProductDetail = asyncHandler(async (req, res) => {
   }
 
   if (cached) {
-    console.log("Single product from Redis");
+
     return res.json({ success: true, data: JSON.parse(cached) });
   }
 
@@ -112,7 +112,7 @@ export const getProductDetail = asyncHandler(async (req, res) => {
     console.error("Redis save failed:", error.message);
   }
 
-  console.log(" Single product from Mongo");
+
 
   res.status(200).json({
     success: true,

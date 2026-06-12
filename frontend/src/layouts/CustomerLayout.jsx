@@ -3,9 +3,10 @@ import Navbar from "../components/layout/Navbar";
 
 export default function CustomerLayout() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#050505]">
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      {/* pt-20 to clear the fixed announcement bar (32px) + navbar (56px) + small gap */}
+      <main>
         <Outlet />
       </main>
     </div>

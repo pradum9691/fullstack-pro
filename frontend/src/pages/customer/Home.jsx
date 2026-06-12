@@ -7,7 +7,6 @@ import FeaturedSection from "../../components/home/FeaturedSection";
 import BannerSection from "../../components/home/BannerSection";
 import BrandStorySection from "../../components/home/BrandStorySection";
 import ExpertiseSection from "../../components/home/ExpertiseSection";
-import Footer from "../../components/layout/Footer";
 
 import Reveal from "../../components/ui/Reveal";
 
@@ -41,8 +40,6 @@ const Home = () => {
       <Reveal y={50} duration={0.9}>
         <ExpertiseSection />
       </Reveal>
- 
-      <Footer />
     </div>
   );
 };

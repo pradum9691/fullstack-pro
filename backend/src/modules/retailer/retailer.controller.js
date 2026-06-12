@@ -9,7 +9,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 
 export const applyRetailer = async (req, res) => {
   try {
-    const { error, value } = applyRetailerSchema.validate(req.body);
+    const { error, value } = applyRetailerSchema.validate(req.body, { stripUnknown: true });
     if (error) {
       return res.status(400).json({
         success: false,

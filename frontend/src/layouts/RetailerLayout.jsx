@@ -1,47 +1,85 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import RetailerSidebar from "../components/dashboard/RetailerSidebar";
+import { Menu } from "lucide-react";
 
 export const RetailerLayout = () => {
   const [open, setOpen] = useState(true);
+  const location = useLocation();
 
   return (
-    <div className="h-screen bg-neutral-950 text-white overflow-hidden flex">
-      <AnimatePresence>
+    <div className="h-screen bg-[#080808] text-white overflow-hidden flex">
+
+      {/* ── Desktop Sidebar ── */}
+      <AnimatePresence initial={false}>
         {open && (
           <motion.aside
-            initial={{ x: -260, opacity: 0 }}
+            initial={{ x: -264, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -260, opacity: 0 }}
-            transition={{ duration: 0.35, ease: "easeInOut" }}
-            className="w-64 bg-black border-r border-white/10"
+            exit={{ x: -264, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="w-64 shrink-0 hidden lg:block"
           >
             <RetailerSidebar close={() => setOpen(false)} />
           </motion.aside>
         )}
       </AnimatePresence>
- 
-      <div className="flex-1 relative">
-        {!open && (
-          <button
-            onClick={() => setOpen(true)}
-            className="absolute top-5 left-5 z-20 h-10 w-10 bg-neutral-900 border border-white/10 rounded-full flex items-center justify-center text-white hover:bg-neutral-800 transition duration-200"
-          >
-            ☰
-          </button>
-        )}
 
+      {/* ── Main Content ── */}
+      <div className="flex-1 flex flex-col min-w-0 relative">
+        {/* Top bar */}
+        <div className="flex items-center gap-3 px-6 py-4 border-b border-white/[0.05] shrink-0">
+          <button
+            onClick={() => setOpen(!open)}
+            className="h-8 w-8 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.08] text-white/40 hover:text-white hover:bg-white/[0.08] hover:border-white/[0.15] transition-all duration-200"
+          >
+            <Menu size={14} />
+          </button>
+          <div className="flex items-center gap-2 text-xs text-white/20">
+            <span className="font-medium text-white/40">Store</span>
+            <span>/</span>
+            <span className="text-white/60 font-medium capitalize">
+              {location.pathname.split("/").filter(Boolean).pop() || "Dashboard"}
+            </span>
+          </div>
+        </div>
+
+        {/* Page Content */}
         <motion.main
-          key="page"
-          initial={{ opacity: 0, y: 12 }}
+          key={location.pathname}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="h-full overflow-y-auto p-10"
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="flex-1 overflow-y-auto px-6 py-8"
         >
           <Outlet />
         </motion.main>
       </div>
+
+      {/* ── Mobile Sidebar Overlay ── */}
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              className="lg:hidden fixed inset-0 z-40 bg-black/70 backdrop-blur-sm"
+            />
+            <motion.aside
+              initial={{ x: -264 }}
+              animate={{ x: 0 }}
+              exit={{ x: -264 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="lg:hidden fixed left-0 top-0 bottom-0 z-50 w-64"
+            >
+              <RetailerSidebar close={() => setOpen(false)} />
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

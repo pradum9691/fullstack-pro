@@ -9,4 +9,9 @@ export const applyRetailerSchema = Joi.object({
     .messages({
       "string.pattern.base": "Invalid GST number format"
     }),
+  bankDetails: Joi.object({
+    accountNumber: Joi.string().allow("").optional(),
+    ifsc: Joi.string().allow("").optional(),
+    bankName: Joi.string().allow("").optional(),
+  }).optional(),
 });

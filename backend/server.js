@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
-console.log("ENV CHECK:", process.env.RAZORPAY_KEY_ID);
+
 
 import app from "./src/app.js";
 import { connectDB } from "./src/config/db.js";

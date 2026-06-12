@@ -1,4 +1,3 @@
-import Navbar from "../../components/layout/Navbar";
 import { Mail, Phone, MapPin, User, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -30,10 +29,8 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-white transition-colors">
-      <Navbar />
-
-      <div className="pt-28 pb-24 px-4 sm:px-6 max-w-6xl mx-auto">
+    <div className="text-white transition-colors">
+      <div className="pt-12 pb-24 px-4 sm:px-6 max-w-6xl mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

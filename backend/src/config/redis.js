@@ -7,15 +7,13 @@ const redis = new Redis({
 });
 
 redis.on("connect", () => {
-  console.log("Redis connecting...");
 });
 
 redis.on("ready", () => {
-  console.log("Redis connected successfully");
 });
 
 redis.on("error", (err) => {
-  console.log("Redis error", err);
+  console.error("Redis error", err);
 });
 
 export default redis;

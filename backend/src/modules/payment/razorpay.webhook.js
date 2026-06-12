@@ -15,37 +15,33 @@ export const razorpayWebhook = async (req, res) => {
         .digest("hex");
 
       if (expectedSignature !== signature) {
-        console.log(" Invalid signature");
-     
-        console.log(" Running in test mode - skipping signature check");
+        // running in test mode
       } else {
-        console.log(" Signature VERIFIED ");
+        // signature verified
       }
     } else {
-      console.log(" No signature provided - test mode");
+      // test mode
     }
 
     const event = req.body.event;
-    console.log(" Event:", event);
 
     if (event === "payment.captured") {
       const paymentEntity = req.body.payload.payment.entity;
-      console.log(" Payment ID:", paymentEntity.id, "Order ID:", paymentEntity.order_id);
 
       const payment = await Payment.findOne({
         gatewayOrderId: paymentEntity.order_id,
         gateway: "RAZORPAY",
       }).populate("order");
 
-      console.log(" Payment found:", payment?._id, "Status:", payment?.status);
+
 
       if (!payment) {
-        console.log(" Payment not found");
+
         return res.json({ ok: true });
       }
 
       if (payment.status === "SUCCESS") {
-        console.log(" Already processed");
+
         return res.json({ ok: true });
       }
 
@@ -53,7 +49,7 @@ export const razorpayWebhook = async (req, res) => {
       payment.status = "SUCCESS";
       payment.gatewayPaymentId = paymentEntity.id;
       await payment.save();
-      console.log(" Payment updated to SUCCESS");
+
 
       const order = payment.order;
 
@@ -61,14 +57,14 @@ export const razorpayWebhook = async (req, res) => {
       if (order && order.status === "PENDING_PAYMENT") {
         order.status = "PAID";
         await order.save();
-        console.log(" ORDER --> PAID ");
+
 
         for (const item of order.items) {
           await Product.findByIdAndUpdate(item.product, {
             $inc: { stock: -item.quantity },
           });
         }
-        console.log(" Stock deducted");
+
       }
     }
 

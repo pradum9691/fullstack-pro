@@ -8,7 +8,7 @@ import {
 } from "./cart.service.js";
 
 export const addItem = asyncHandler(async (req, res) => {
-  console.log("additem", req.body);
+
   
   const cart = await addToCart(req.user._id, req.body);
   res.json({ success: true, data: cart });

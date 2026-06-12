@@ -1,12 +1,13 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { logoutSuccess } from "../../store/slices/authSlice";
 import { useCart } from "../../context/CartContext";
 import { useDispatch, useSelector } from "react-redux";
-import { Sun, Moon, Menu, X, Search, Heart } from "lucide-react";
+import { Sun, Moon, Menu, X, Search, Heart, ShoppingBag, User, ChevronDown, Shield, Store } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import { clearWishlist } from "../../store/slices/wishlistSlice";
 import { toast } from "react-toastify";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -15,13 +16,22 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { clearCart } = useCart();
+  const searchRef = useRef(null);
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [query, setQuery] = useState("");
+  const [scrolled, setScrolled] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const { totalItems } = useCart();
   const { theme, toggleTheme } = useTheme();
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -30,209 +40,399 @@ const Navbar = () => {
     dispatch(logoutSuccess());
     dispatch(clearWishlist());
     clearCart();
-    toast.success("Logged out");
+    toast.success("Logged out successfully");
     navigate("/login");
+    setUserMenuOpen(false);
   };
+
   useEffect(() => {
     setMobileOpen(false);
     setShowSearch(false);
+    setUserMenuOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
-    const close = (e) => e.key === "Escape" && setShowSearch(false);
+    const close = (e) => {
+      if (e.key === "Escape") { setShowSearch(false); setUserMenuOpen(false); }
+    };
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
   }, []);
 
+  useEffect(() => {
+    if (showSearch && searchRef.current) {
+      setTimeout(() => searchRef.current?.focus(), 100);
+    }
+  }, [showSearch]);
+
   const isActive = (path) =>
-    location.pathname === path || location.pathname.startsWith(path + "/")
-      ? "opacity-100 underline underline-offset-4"
-      : "opacity-60 hover:opacity-100";
-  const menuItems = [
-    { name: "Shop All", path: "/products" },
-    user && { name: "Orders", path: "/orders" },
-    user && { name: "Profile", path: "/profile" },
-    user && user.role === "ADMIN" && { name: "Admin Panel", path: "/admin/dashboard" },
-    user && user.role === "RETAILER" && { name: "Retailer Panel", path: "/retailer/dashboard" },
+    location.pathname === path || location.pathname.startsWith(path + "/");
+
+  const navLinks = [
+    { name: "Shop", path: "/products" },
     { name: "Contact", path: "/contact" },
-  ].filter(Boolean);
+  ];
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (!query.trim()) return;
-    navigate(`/products?search=${query}`);
+    navigate(`/products?search=${encodeURIComponent(query.trim())}`);
     setQuery("");
     setShowSearch(false);
   };
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full z-[60] bg-black text-white text-[10px] tracking-widest overflow-hidden">
+      {/* Announcement Bar */}
+      <div className="fixed top-0 left-0 w-full z-[60] bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 text-white text-[10px] tracking-[0.2em] font-medium overflow-hidden h-8 flex items-center">
         <div className="marquee">
-          <div className="marquee__inner">
-            <span>FREE SHIPPING WORLDWIDE</span>
-            <span>PREMIUM QUALITY</span>
-            <span>FREE SHIPPING WORLDWIDE</span>
-            <span>PREMIUM QUALITY</span>
-          </div>
-          <div className="marquee__inner">
-            <span>FREE SHIPPING WORLDWIDE</span>
-            <span>PREMIUM QUALITY</span>
-            <span>FREE SHIPPING WORLDWIDE</span>
-            <span>PREMIUM QUALITY</span>
-          </div>
-          <div className="marquee__inner">
-            <span>FREE SHIPPING WORLDWIDE</span>
-            <span>PREMIUM QUALITY</span>
-            <span>FREE SHIPPING WORLDWIDE</span>
-            <span>PREMIUM QUALITY</span>
-          </div>
+          {[0, 1, 2].map((i) => (
+            <div className="marquee__inner" key={i}>
+              <span className="opacity-90">✦ FREE SHIPPING ON ORDERS ABOVE ₹999</span>
+              <span className="opacity-60 mx-4">|</span>
+              <span className="opacity-90">✦ PREMIUM QUALITY GUARANTEED</span>
+              <span className="opacity-60 mx-4">|</span>
+              <span className="opacity-90">✦ EASY RETURNS WITHIN 30 DAYS</span>
+              <span className="opacity-60 mx-4">|</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      <header className="fixed top-7 left-0 right-0 z-[50]">
-        <div className="max-w-7xl mx-auto px-5">
+      {/* Main Navbar */}
+      <header className="fixed top-8 left-0 right-0 z-[50] px-4 sm:px-6">
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className={`max-w-7xl mx-auto transition-all duration-500 ${
+            scrolled
+              ? "mt-1"
+              : "mt-3"
+          }`}
+        >
           <div
-            className="
-              h-14 flex items-center justify-between rounded-full px-6
-              backdrop-blur-xl transition-colors duration-300
-              bg-white/80 text-black
-              dark:bg-black/80 dark:text-white
-              border border-black/10 dark:border-white/10
-            "
+            className={`
+              flex items-center justify-between h-14 px-4 sm:px-6 rounded-2xl
+              transition-all duration-500
+              ${scrolled
+                ? "backdrop-blur-2xl bg-black/80 border border-white/10 shadow-2xl shadow-black/40"
+                : "backdrop-blur-xl bg-white/5 border border-white/8"
+              }
+            `}
           >
-            <nav className="hidden md:flex gap-7 text-xs font-medium">
-              {menuItems.map((item) => (
+            {/* Left — Desktop Nav */}
+            <nav className="hidden md:flex items-center gap-1">
+              {navLinks.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={isActive(item.path)}
+                  className={`relative px-4 py-2 text-xs font-medium tracking-wide rounded-xl transition-all duration-200 ${
+                    isActive(item.path)
+                      ? "text-white"
+                      : "text-white/50 hover:text-white hover:bg-white/5"
+                  }`}
                 >
-                  {item.name}
+                  {isActive(item.path) && (
+                    <motion.span
+                      layoutId="navActive"
+                      className="absolute inset-0 bg-white/10 rounded-xl"
+                    />
+                  )}
+                  <span className="relative z-10">{item.name}</span>
                 </Link>
               ))}
+              {user?.role === "ADMIN" && (
+                <Link
+                  to="/admin/dashboard"
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium tracking-wide rounded-xl text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-all duration-200"
+                >
+                  <Shield size={13} />
+                  Admin
+                </Link>
+              )}
+              {user?.role === "RETAILER" && (
+                <Link
+                  to="/retailer/dashboard"
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium tracking-wide rounded-xl text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all duration-200"
+                >
+                  <Store size={13} />
+                  My Store
+                </Link>
+              )}
             </nav>
 
+            {/* Center — Brand */}
             <Link
               to="/"
-              className="text-xs md:text-sm font-semibold tracking-[0.35em] uppercase"
+              className="text-xs sm:text-sm font-bold tracking-[0.3em] uppercase text-white absolute left-1/2 -translate-x-1/2"
             >
-              Annesie Whites
+              <span className="gradient-text">Annesie</span>{" "}
+              <span className="text-white/70 font-light">Whites</span>
             </Link>
 
-            <div className="flex items-center gap-4 text-xs">
-              <button
-                onClick={() => navigate("/wishlist")}
-                className="relative opacity-70 hover:opacity-100"
-              >
-                <Heart size={15} />
-
-                {wishlist.length > 0 && (
-                  <span
-                    className="absolute -top-2 -right-2 text-[10px] px-1.5 rounded-full bg-red-500 text-white" >
-                    {wishlist.length}
-                  </span>
-                )}
-              </button>
-              <button
+            {/* Right — Actions */}
+            <div className="flex items-center gap-1">
+              {/* Search */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setShowSearch(!showSearch)}
-                className="opacity-70 hover:opacity-100"
+                className="h-8 w-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/8 transition-all duration-200"
+                aria-label="Search"
               >
                 <Search size={15} />
-              </button>
+              </motion.button>
 
-              <button
+              {/* Theme Toggle */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={toggleTheme}
-                className="opacity-70 hover:opacity-100"
+                className="h-8 w-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/8 transition-all duration-200"
+                aria-label="Toggle theme"
               >
                 {theme === "light" ? <Moon size={15} /> : <Sun size={15} />}
-              </button>
+              </motion.button>
 
-              <button
-                onClick={() => navigate("/cart")}
-                className="relative opacity-70 hover:opacity-100"
+              {/* Wishlist */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate("/wishlist")}
+                className="relative h-8 w-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/8 transition-all duration-200"
+                aria-label="Wishlist"
               >
-                Cart
-                {totalItems > 0 && (
-                  <span
-                    className="
-    absolute -top-2 -right-3 text-[10px] px-1.5 rounded-full
-    bg-black text-white dark:bg-white dark:text-black
-  "
-                  >
-                    {totalItems}
-                  </span>
-                )}
-              </button>
+                <Heart size={15} />
+                <AnimatePresence>
+                  {wishlist.length > 0 && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center text-[9px] font-bold rounded-full bg-rose-500 text-white"
+                    >
+                      {wishlist.length}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.button>
 
+              {/* Cart */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate("/cart")}
+                className="relative h-8 w-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/8 transition-all duration-200"
+                aria-label="Cart"
+              >
+                <ShoppingBag size={15} />
+                <AnimatePresence>
+                  {totalItems > 0 && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center text-[9px] font-bold rounded-full bg-indigo-500 text-white"
+                    >
+                      {totalItems}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.button>
+
+              {/* User Menu */}
               {user ? (
-                <button
-                  onClick={handleLogout}
-                  className="opacity-70 hover:opacity-100"
-                >
-                  Logout
-                </button>
+                <div className="relative hidden md:block">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="flex items-center gap-2 h-8 px-3 rounded-xl border border-white/10 hover:border-white/20 text-white/70 hover:text-white transition-all duration-200 text-xs font-medium"
+                  >
+                    <div className="h-5 w-5 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[9px] font-bold text-white">
+                      {user.name?.[0]?.toUpperCase() || "U"}
+                    </div>
+                    <span className="hidden lg:block max-w-[80px] truncate">{user.name?.split(" ")[0]}</span>
+                    <ChevronDown size={11} className={`transition-transform duration-200 ${userMenuOpen ? "rotate-180" : ""}`} />
+                  </motion.button>
+
+                  <AnimatePresence>
+                    {userMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 top-full mt-2 w-52 bg-neutral-900/95 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl shadow-black/60"
+                      >
+                        <div className="p-3 border-b border-white/5">
+                          <p className="text-xs font-semibold text-white truncate">{user.name}</p>
+                          <p className="text-[10px] text-white/40 truncate mt-0.5">{user.email}</p>
+                        </div>
+                        <div className="p-2">
+                          <Link to="/profile" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs text-white/60 hover:text-white hover:bg-white/5 transition-all">
+                            <User size={13} /> Profile
+                          </Link>
+                          <Link to="/orders" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs text-white/60 hover:text-white hover:bg-white/5 transition-all">
+                            <ShoppingBag size={13} /> My Orders
+                          </Link>
+                          {user.role === "CUSTOMER" && (
+                            <Link to="/apply-retailer" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-all">
+                              <Store size={13} /> Become a Retailer
+                            </Link>
+                          )}
+                        </div>
+                        <div className="p-2 border-t border-white/5">
+                          <button
+                            onClick={handleLogout}
+                            className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all"
+                          >
+                            <X size={13} /> Sign Out
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               ) : (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => navigate("/login")}
-                  className="opacity-70 hover:opacity-100"
+                  className="hidden md:flex h-8 px-4 items-center text-xs font-semibold rounded-xl bg-white text-black hover:bg-white/90 transition-all duration-200"
                 >
-                  Login
-                </button>
+                  Sign In
+                </motion.button>
               )}
 
-              <button
+              {/* Mobile Menu Toggle */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="md:hidden opacity-70"
+                className="md:hidden h-8 w-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/8 transition-all duration-200 ml-1"
               >
-                {mobileOpen ? <X size={18} /> : <Menu size={18} />}
-              </button>
+                <AnimatePresence mode="wait">
+                  {mobileOpen ? (
+                    <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
+                      <X size={16} />
+                    </motion.div>
+                  ) : (
+                    <motion.div key="open" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.15 }}>
+                      <Menu size={16} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.button>
             </div>
           </div>
- 
-          {showSearch && (
-            <form
-              onSubmit={handleSearch}
-              className="
-                absolute left-4 right-4 top-full mt-3
-                bg-white dark:bg-black
-                border border-black/10 dark:border-white/10
-                rounded-full px-5 py-3 shadow-xl
-              "
-            >
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search products..."
-                className="w-full bg-transparent outline-none text-sm"
-                autoFocus
-              />
-            </form>
-          )}
- 
-          {mobileOpen && (
-            <div
-              className="
-                md:hidden mt-3 mx-3
-                bg-white dark:bg-black
-                border border-black/10 dark:border-white/10
-                rounded-2xl px-6 py-6
-              "
-            >
-              <div className="flex flex-col gap-4 text-sm">
-                {menuItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={isActive(item.path)}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+
+          {/* Search Dropdown */}
+          <AnimatePresence>
+            {showSearch && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                transition={{ duration: 0.2 }}
+                className="mt-2 backdrop-blur-2xl bg-black/80 border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
+              >
+                <form onSubmit={handleSearch} className="flex items-center gap-3 px-5 py-4">
+                  <Search size={16} className="text-white/40 shrink-0" />
+                  <input
+                    ref={searchRef}
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search for products..."
+                    className="w-full bg-transparent outline-none text-sm text-white placeholder-white/30 font-medium"
+                  />
+                  {query && (
+                    <button type="button" onClick={() => setQuery("")} className="text-white/30 hover:text-white/60 transition-colors">
+                      <X size={14} />
+                    </button>
+                  )}
+                  <button type="submit" className="px-4 py-1.5 bg-white text-black text-xs font-bold rounded-xl hover:bg-white/90 transition-all shrink-0">
+                    Search
+                  </button>
+                </form>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Mobile Menu */}
+          <AnimatePresence>
+            {mobileOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+                className="md:hidden mt-2 backdrop-blur-2xl bg-black/90 border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
+              >
+                <div className="p-4 space-y-1">
+                  {navLinks.map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                        isActive(item.path)
+                          ? "bg-white/10 text-white"
+                          : "text-white/50 hover:text-white hover:bg-white/5"
+                      }`}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                  {user?.role === "ADMIN" && (
+                    <Link to="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-indigo-400 hover:bg-indigo-500/10 transition-all">
+                      <Shield size={14} /> Admin Panel
+                    </Link>
+                  )}
+                  {user?.role === "RETAILER" && (
+                    <Link to="/retailer/dashboard" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-emerald-400 hover:bg-emerald-500/10 transition-all">
+                      <Store size={14} /> My Store
+                    </Link>
+                  )}
+                </div>
+                <div className="px-4 pb-4 pt-2 border-t border-white/5 flex flex-col gap-2">
+                  {user ? (
+                    <>
+                      <div className="flex items-center gap-3 px-4 py-3">
+                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white">
+                          {user.name?.[0]?.toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-white">{user.name}</p>
+                          <p className="text-[10px] text-white/40">{user.email}</p>
+                        </div>
+                      </div>
+                      <Link to="/orders" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-white/60 hover:text-white hover:bg-white/5 transition-all">
+                        <ShoppingBag size={14} /> My Orders
+                      </Link>
+                      <Link to="/profile" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-white/60 hover:text-white hover:bg-white/5 transition-all">
+                        <User size={14} /> Profile
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-rose-400 hover:bg-rose-500/10 transition-all text-left w-full"
+                      >
+                        <X size={14} /> Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => navigate("/login")}
+                      className="w-full py-3 bg-white text-black text-sm font-bold rounded-xl hover:bg-white/90 transition-all"
+                    >
+                      Sign In
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </header>
     </>
   );

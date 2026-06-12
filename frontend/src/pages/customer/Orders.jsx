@@ -1,24 +1,29 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
-import Navbar from "../../components/layout/Navbar";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+import { ShoppingBag, CreditCard, Calendar } from "lucide-react";
 
-const statusStyle = (status) => {
+const getStatusBadge = (status) => {
   switch (status) {
     case "PENDING_PAYMENT":
-      return "bg-yellow-100 text-yellow-700";
+      return "badge-amber";
     case "PAID":
-      return "bg-green-100 text-green-700";
+      return "badge-indigo";
     case "SHIPPED":
-      return "bg-blue-100 text-blue-700";
+      return "badge-indigo";
     case "DELIVERED":
-      return "bg-emerald-100 text-emerald-700";
+      return "badge-emerald";
     case "CANCELLED":
-      return "bg-red-100 text-red-700";
+      return "badge-rose";
     default:
-      return "bg-gray-100 text-gray-700";
+      return "badge-neutral";
   }
+};
+
+const getStatusLabel = (status) => {
+  return status?.replace("_", " ");
 };
 
 const Orders = () => {
@@ -44,7 +49,6 @@ const Orders = () => {
     loadOrders();
   }, []);
 
- 
   const payWithRazorpay = async (order) => {
     if (payingId === order._id) return;
     setPayingId(order._id);
@@ -58,20 +62,20 @@ const Orders = () => {
         amount: res.data.order.amount,
         currency: "INR",
         order_id: res.data.order.id,
-        name: "MERN Shop",
+        name: "Annesie Whites",
         description: "Order Payment",
         handler: async function (response) {
           await api.post("/payments/razorpay-verify", {
             ...response,
             orderId: order._id,
           });
-          toast.success("Payment successfull");
+          toast.success("Payment successful");
           await loadOrders();
-          navigate(`/order-success/${order._id}`);
+          navigate(`/order/success?orderId=${order._id}`);
         },
         theme: { color: "#000000" },
         modal: {
-          ondismiss: () => navigate("/order-failed"),
+          ondismiss: () => navigate("/order/failed"),
         },
       };
 
@@ -83,67 +87,90 @@ const Orders = () => {
       setPayingId(null);
     }
   };
- 
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-black/20 border-t-black animate-spin" />
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-white">
+        <div className="w-10 h-10 border-2 border-white/20 border-t-indigo-500 rounded-full animate-spin mb-4" />
+        <p className="text-sm text-neutral-400 animate-pulse">Loading order history...</p>
       </div>
     );
   }
- 
+
   if (orders.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <h2 className="text-2xl font-semibold">No orders yet</h2>
-        <p className="text-sm opacity-60 mt-2">Your orders will appear here</p>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="min-h-[60vh] text-white flex flex-col items-center justify-center px-6 text-center"
+      >
+        <div className="h-16 w-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-neutral-400 mb-6">
+          <ShoppingBag size={28} />
+        </div>
+        <h1 className="text-2xl font-semibold tracking-tight">No orders yet</h1>
+        <p className="text-sm text-neutral-500 mt-2 max-w-sm">
+          You haven't placed any orders yet. Start exploring our collections.
+        </p>
+
         <button
           onClick={() => navigate("/products")}
-          className="mt-6 px-8 py-3 rounded-full bg-black text-white"
+          className="mt-8 px-8 py-3 bg-white text-black font-semibold text-sm rounded-xl hover:bg-neutral-200 transition duration-300 shadow-lg shadow-white/5 hover:shadow-white/10 hover:-translate-y-0.5 cursor-pointer"
         >
           Start Shopping
         </button>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white text-black">
-      <Navbar />
+    <motion.div 
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="max-w-4xl mx-auto px-6 py-12 text-white"
+    >
+      <div className="mb-10">
+        <span className="block text-xs font-bold uppercase tracking-widest text-indigo-400 mb-2">
+          Account Dashboard
+        </span>
+        <h1 className="text-3xl font-semibold tracking-tight gradient-text">My Orders</h1>
+      </div>
 
-      <div className="pt-28 pb-24 max-w-6xl mx-auto px-6">
-   
-        <div className="mb-12">
-          <span className="block text-[11px] tracking-[0.35em] uppercase opacity-50 mb-2">
-            Account
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-semibold">My Orders</h1>
-        </div>
-
- 
-        <div className="space-y-8">
-          {orders.map((order) => (
-            <div
-              key={order._id}
-              onClick={() => navigate(`/orders/${order._id}`)}
-              className="
-                cursor-pointer
-                border border-black/10 rounded-3xl
-                p-6 sm:p-8
-                hover:shadow-lg transition
-              "
-            >
-           
-              <div className="flex justify-between items-start gap-4 mb-6">
+      <div className="space-y-6">
+        {orders.map((order, idx) => (
+          <motion.div
+            key={order._id}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: Math.min(idx * 0.05, 0.4) }}
+            onClick={() => navigate(`/orders/${order._id}`)}
+            className="group cursor-pointer border border-white/5 rounded-3xl p-6 sm:p-8 bg-[#111111] hover:border-white/10 transition-all duration-300 shadow-xl"
+          >
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-6 border-b border-white/5">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 bg-white/5 rounded-xl flex items-center justify-center text-neutral-400">
+                  <Calendar size={18} />
+                </div>
                 <div>
-                  <p className="text-[11px] tracking-widest uppercase opacity-50">
-                    Order ID
+                  <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
+                    Order Placed
                   </p>
-                  <p className="text-sm font-medium mt-1">
-                    #{order._id.slice(-6)}
+                  <p className="text-sm font-semibold mt-0.5 text-neutral-300">
+                    {new Date(order.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                   </p>
                 </div>
+              </div>
 
+              <div className="flex items-center gap-4 self-stretch sm:self-auto justify-between">
+                <div>
+                  <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider text-right sm:text-left">
+                    Order ID
+                  </p>
+                  <p className="text-xs font-mono font-medium mt-0.5 text-neutral-400">
+                    #{order._id.substring(order._id.length - 8)}
+                  </p>
+                </div>
+                
                 {order.status === "PENDING_PAYMENT" ? (
                   <button
                     disabled={payingId === order._id}
@@ -151,45 +178,55 @@ const Orders = () => {
                       e.stopPropagation();
                       payWithRazorpay(order);
                     }}
-                    className="px-5 py-2.5 rounded-full bg-black text-white text-xs font-medium disabled:opacity-40"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-bold rounded-xl disabled:opacity-40 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer shadow-lg shadow-indigo-500/10"
                   >
-                    {payingId === order._id ? "Processing..." : "Pay Now"}
+                    <CreditCard size={12} />
+                    <span>{payingId === order._id ? "Processing..." : "Pay Now"}</span>
                   </button>
                 ) : (
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyle(
-                      order.status,
-                    )}`}
-                  >
-                    {order.status.replaceAll("_", " ")}
+                  <span className={`badge ${getStatusBadge(order.status)}`}>
+                    {getStatusLabel(order.status)}
                   </span>
                 )}
               </div>
-
-               
-              <div className="space-y-3 text-sm">
-                {order.items.map((item, i) => (
-                  <div key={i} className="flex justify-between opacity-80">
-                    <span>
-                      {item.product?.name} × {item.quantity}
-                    </span>
-                    <span>₹ {item.subtotal}</span>
-                  </div>
-                ))}
-              </div>
-
-           
-              <div className="mt-6 pt-6 border-t border-black/10 flex justify-between items-center">
-                <span className="text-sm opacity-60">Order Total</span>
-                <span className="text-lg font-semibold">
-                  ₹ {order.totalAmount}
-                </span>
-              </div>
             </div>
-          ))}
-        </div>
+
+            {/* Items display */}
+            <div className="space-y-4">
+              {order.items.map((item, i) => (
+                <div key={i} className="flex justify-between items-center text-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-neutral-800 flex items-center justify-center overflow-hidden border border-white/10 flex-shrink-0">
+                      {item.product?.images?.[0] ? (
+                        <img src={item.product.images[0]} alt="Product" className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="text-[10px] text-neutral-500 font-bold">No img</span>
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-neutral-200 group-hover:text-indigo-400 transition-colors duration-200">
+                        {item.product?.name || "Product"}
+                      </p>
+                      <p className="text-xs text-neutral-500 mt-0.5">
+                        Qty: {item.quantity}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="font-semibold text-neutral-300">₹ {item.subtotal?.toLocaleString("en-IN")}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 pt-6 border-t border-white/5 flex justify-between items-center">
+              <span className="text-xs text-neutral-400 uppercase tracking-wider font-semibold">Total Amount</span>
+              <span className="text-lg font-bold text-white">
+                ₹ {order.totalAmount?.toLocaleString("en-IN")}
+              </span>
+            </div>
+          </motion.div>
+        ))}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

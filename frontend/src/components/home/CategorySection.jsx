@@ -1,23 +1,40 @@
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 
 const categories = [
   {
-    title: "MEN",
+    title: "Men",
     subtitle: "Menswear Collection",
-    bg: "bg-neutral-100",
+    tag: "New Arrivals",
+    gradient: "from-[#1a1a2e] to-[#16213e]",
+    accentGlow: "bg-indigo-500/20",
+    accentBorder: "border-indigo-500/30",
+    textAccent: "text-indigo-400",
     image: "https://pngimg.com/uploads/jacket/jacket_PNG8056.png",
+    category: "Men",
   },
   {
-    title: "WOMEN",
-    subtitle: "Women’s Fashion",
-    bg: "bg-pink-100",
+    title: "Women",
+    subtitle: "Women's Fashion",
+    tag: "Trending",
+    gradient: "from-[#1a0a1e] to-[#200a2e]",
+    accentGlow: "bg-purple-500/20",
+    accentBorder: "border-purple-500/30",
+    textAccent: "text-purple-400",
     image: "https://pngimg.com/uploads/dress/dress_PNG166.png",
+    category: "Women",
   },
   {
-    title: "KIDS",
-    subtitle: "Kids Collection",
-    bg: "bg-yellow-100",
+    title: "Unisex",
+    subtitle: "Universal Styles",
+    tag: "Best Sellers",
+    gradient: "from-[#0a1a1a] to-[#0a1e1e]",
+    accentGlow: "bg-emerald-500/20",
+    accentBorder: "border-emerald-500/30",
+    textAccent: "text-emerald-400",
     image: "https://pngimg.com/uploads/tshirt/tshirt_PNG5454.png",
+    category: "Unisex",
   },
 ];
 
@@ -25,56 +42,74 @@ const CategorySection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="bg-white dark:bg-black pt-12 md:pt-16 pb-20">
+    <section className="py-20 bg-[#050505]">
       <div className="max-w-7xl mx-auto px-6">
- 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        {/* Header */}
+        <div className="mb-12 text-center">
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-[10px] font-bold tracking-[0.3em] uppercase text-white/20 mb-3"
+          >
+            Browse by Category
+          </motion.p>
+          <motion.h2
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.05 }}
+            className="text-3xl sm:text-4xl font-bold text-white tracking-tight"
+          >
+            Shop by Style
+          </motion.h2>
+        </div>
 
-          {categories.map((cat) => (
-            <div
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          {categories.map((cat, i) => (
+            <motion.div
               key={cat.title}
-              onClick={() =>
-                navigate(`/products?category=${cat.title.toLowerCase()}`)
-              }
-              className={`
-                ${cat.bg}
-                rounded-3xl
-                h-[360px] md:h-[420px]
-                p-10
-                flex flex-col justify-between
-                cursor-pointer
-                hover:scale-[1.02]
-                transition-transform duration-300
-              `}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.12, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              onClick={() => navigate(`/products?category=${cat.category}`)}
+              className="group relative h-[380px] rounded-2xl overflow-hidden cursor-pointer border border-white/[0.06] hover:border-white/[0.14] transition-all duration-500"
             >
- 
-              <div>
-                <p className="text-sm opacity-70">
-                  {cat.subtitle}
-                </p>
-                <h3 className="mt-2 text-4xl font-bold tracking-wide">
-                  {cat.title}
-                </h3>
+              {/* Gradient Background */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient}`} />
+
+              {/* Glow blob */}
+              <div className={`absolute top-6 right-6 w-32 h-32 rounded-full ${cat.accentGlow} blur-2xl opacity-50 group-hover:opacity-80 transition-opacity duration-500`} />
+
+              {/* Content */}
+              <div className="absolute top-6 left-6 right-6 z-10">
+                <span className={`badge ${cat.textAccent} bg-white/5 ${cat.accentBorder} mb-4 inline-flex`}>
+                  {cat.tag}
+                </span>
+                <p className="text-xs text-white/40 font-medium">{cat.subtitle}</p>
+                <h3 className="text-3xl font-bold text-white mt-1 tracking-tight">{cat.title}</h3>
               </div>
- 
-              <div className="flex justify-center">
+
+              {/* Image */}
+              <div className="absolute inset-0 flex items-end justify-center pb-16 px-4">
                 <img
                   src={cat.image}
                   alt={cat.title}
-                  className="h-44 md:h-52 object-contain"
+                  className="h-48 object-contain transition-all duration-700 group-hover:scale-110 group-hover:-translate-y-2 drop-shadow-2xl"
                 />
               </div>
- 
-              <div>
-                <button className="inline-flex items-center gap-2 text-sm font-medium bg-black text-white px-6 py-2 rounded-full">
-                  Shop Now →
-                </button>
+
+              {/* Bottom CTA */}
+              <div className="absolute bottom-5 left-6 right-6 z-10">
+                <div className="flex items-center justify-between bg-white/[0.05] backdrop-blur-sm border border-white/[0.1] rounded-xl px-4 py-3 group-hover:bg-white/[0.1] group-hover:border-white/[0.2] transition-all duration-300">
+                  <span className="text-xs font-bold text-white/70 group-hover:text-white transition-colors">Shop {cat.title}</span>
+                  <ArrowRight size={14} className="text-white/40 group-hover:text-white group-hover:translate-x-1 transition-all duration-200" />
+                </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-
         </div>
-
       </div>
     </section>
   );
