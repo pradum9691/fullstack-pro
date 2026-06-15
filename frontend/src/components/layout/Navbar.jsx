@@ -116,8 +116,8 @@ const Navbar = () => {
               flex items-center justify-between h-14 px-4 sm:px-6 rounded-2xl
               transition-all duration-500
               ${scrolled
-                ? "backdrop-blur-2xl bg-black/80 border border-white/10 shadow-2xl shadow-black/40"
-                : "backdrop-blur-xl bg-white/5 border border-white/8"
+                ? "backdrop-blur-2xl bg-bg-base/80 border border-border shadow-xl shadow-black/5 dark:shadow-black/40"
+                : "backdrop-blur-xl bg-bg-base/40 border border-border"
               }
             `}
           >
@@ -129,14 +129,14 @@ const Navbar = () => {
                   to={item.path}
                   className={`relative px-4 py-2 text-xs font-medium tracking-wide rounded-xl transition-all duration-200 ${
                     isActive(item.path)
-                      ? "text-white"
-                      : "text-white/50 hover:text-white hover:bg-white/5"
+                      ? "text-text-primary"
+                      : "text-text-secondary hover:text-text-primary hover:bg-bg-card-hover"
                   }`}
                 >
                   {isActive(item.path) && (
                     <motion.span
                       layoutId="navActive"
-                      className="absolute inset-0 bg-white/10 rounded-xl"
+                      className="absolute inset-0 bg-bg-card border border-border rounded-xl"
                     />
                   )}
                   <span className="relative z-10">{item.name}</span>
@@ -145,7 +145,7 @@ const Navbar = () => {
               {user?.role === "ADMIN" && (
                 <Link
                   to="/admin/dashboard"
-                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium tracking-wide rounded-xl text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-all duration-200"
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium tracking-wide rounded-xl text-indigo-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all duration-200"
                 >
                   <Shield size={13} />
                   Admin
@@ -154,7 +154,7 @@ const Navbar = () => {
               {user?.role === "RETAILER" && (
                 <Link
                   to="/retailer/dashboard"
-                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium tracking-wide rounded-xl text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all duration-200"
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium tracking-wide rounded-xl text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all duration-200"
                 >
                   <Store size={13} />
                   My Store
@@ -162,13 +162,13 @@ const Navbar = () => {
               )}
             </nav>
 
-            {/* Center — Brand */}
+            {/* Center — Brand (Responsive placement to prevent mobile overlap) */}
             <Link
               to="/"
-              className="text-xs sm:text-sm font-bold tracking-[0.3em] uppercase text-white absolute left-1/2 -translate-x-1/2"
+              className="flex-1 md:flex-none text-left md:absolute md:left-1/2 md:-translate-x-1/2 text-xs sm:text-sm font-bold tracking-[0.3em] uppercase text-text-primary"
             >
               <span className="gradient-text">Annesie</span>{" "}
-              <span className="text-white/70 font-light">Whites</span>
+              <span className="text-text-secondary font-light">Whites</span>
             </Link>
 
             {/* Right — Actions */}
@@ -178,7 +178,7 @@ const Navbar = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowSearch(!showSearch)}
-                className="h-8 w-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/8 transition-all duration-200"
+                className="h-8 w-8 flex items-center justify-center rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-card-hover transition-all duration-200"
                 aria-label="Search"
               >
                 <Search size={15} />
@@ -189,7 +189,7 @@ const Navbar = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleTheme}
-                className="h-8 w-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/8 transition-all duration-200"
+                className="h-8 w-8 flex items-center justify-center rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-card-hover transition-all duration-200"
                 aria-label="Toggle theme"
               >
                 {theme === "light" ? <Moon size={15} /> : <Sun size={15} />}
@@ -200,7 +200,7 @@ const Navbar = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate("/wishlist")}
-                className="relative h-8 w-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/8 transition-all duration-200"
+                className="hidden sm:flex relative h-8 w-8 items-center justify-center rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-card-hover transition-all duration-200"
                 aria-label="Wishlist"
               >
                 <Heart size={15} />
@@ -223,7 +223,7 @@ const Navbar = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate("/cart")}
-                className="relative h-8 w-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/8 transition-all duration-200"
+                className="relative h-8 w-8 flex items-center justify-center rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-card-hover transition-all duration-200"
                 aria-label="Cart"
               >
                 <ShoppingBag size={15} />
@@ -248,7 +248,7 @@ const Navbar = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center gap-2 h-8 px-3 rounded-xl border border-white/10 hover:border-white/20 text-white/70 hover:text-white transition-all duration-200 text-xs font-medium"
+                    className="flex items-center gap-2 h-8 px-3 rounded-xl border border-border hover:border-border-hover text-text-secondary hover:text-text-primary transition-all duration-200 text-xs font-medium"
                   >
                     <div className="h-5 w-5 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[9px] font-bold text-white">
                       {user.name?.[0]?.toUpperCase() || "U"}
@@ -264,29 +264,29 @@ const Navbar = () => {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.95 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full mt-2 w-52 bg-neutral-900/95 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl shadow-black/60"
+                        className="absolute right-0 top-full mt-2 w-52 bg-bg-card backdrop-blur-xl border border-border rounded-2xl overflow-hidden shadow-2xl shadow-black/10 dark:shadow-black/60"
                       >
-                        <div className="p-3 border-b border-white/5">
-                          <p className="text-xs font-semibold text-white truncate">{user.name}</p>
-                          <p className="text-[10px] text-white/40 truncate mt-0.5">{user.email}</p>
+                        <div className="p-3 border-b border-border">
+                          <p className="text-xs font-semibold text-text-primary truncate">{user.name}</p>
+                          <p className="text-[10px] text-text-muted truncate mt-0.5">{user.email}</p>
                         </div>
                         <div className="p-2">
-                          <Link to="/profile" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs text-white/60 hover:text-white hover:bg-white/5 transition-all">
+                          <Link to="/profile" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs text-text-secondary hover:text-text-primary hover:bg-bg-card-hover transition-all">
                             <User size={13} /> Profile
                           </Link>
-                          <Link to="/orders" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs text-white/60 hover:text-white hover:bg-white/5 transition-all">
+                          <Link to="/orders" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs text-text-secondary hover:text-text-primary hover:bg-bg-card-hover transition-all">
                             <ShoppingBag size={13} /> My Orders
                           </Link>
                           {user.role === "CUSTOMER" && (
-                            <Link to="/apply-retailer" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-all">
+                            <Link to="/apply-retailer" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs text-indigo-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all">
                               <Store size={13} /> Become a Retailer
                             </Link>
                           )}
                         </div>
-                        <div className="p-2 border-t border-white/5">
+                        <div className="p-2 border-t border-border">
                           <button
                             onClick={handleLogout}
-                            className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all"
+                            className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all"
                           >
                             <X size={13} /> Sign Out
                           </button>
@@ -300,7 +300,7 @@ const Navbar = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => navigate("/login")}
-                  className="hidden md:flex h-8 px-4 items-center text-xs font-semibold rounded-xl bg-white text-black hover:bg-white/90 transition-all duration-200"
+                  className="hidden md:flex h-8 px-4 items-center text-xs font-semibold rounded-xl bg-text-primary text-bg-base transition-all duration-200 shadow-md"
                 >
                   Sign In
                 </motion.button>
@@ -311,7 +311,7 @@ const Navbar = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="md:hidden h-8 w-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/8 transition-all duration-200 ml-1"
+                className="md:hidden h-8 w-8 flex items-center justify-center rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-card-hover transition-all duration-200 ml-1"
               >
                 <AnimatePresence mode="wait">
                   {mobileOpen ? (
@@ -336,23 +336,23 @@ const Navbar = () => {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.98 }}
                 transition={{ duration: 0.2 }}
-                className="mt-2 backdrop-blur-2xl bg-black/80 border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
+                className="mt-2 backdrop-blur-2xl bg-bg-card/90 border border-border rounded-2xl overflow-hidden shadow-xl"
               >
                 <form onSubmit={handleSearch} className="flex items-center gap-3 px-5 py-4">
-                  <Search size={16} className="text-white/40 shrink-0" />
+                  <Search size={16} className="text-text-muted shrink-0" />
                   <input
                     ref={searchRef}
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search for products..."
-                    className="w-full bg-transparent outline-none text-sm text-white placeholder-white/30 font-medium"
+                    className="w-full bg-transparent outline-none text-sm text-text-primary placeholder-text-muted font-medium"
                   />
                   {query && (
-                    <button type="button" onClick={() => setQuery("")} className="text-white/30 hover:text-white/60 transition-colors">
+                    <button type="button" onClick={() => setQuery("")} className="text-text-muted hover:text-text-primary transition-colors">
                       <X size={14} />
                     </button>
                   )}
-                  <button type="submit" className="px-4 py-1.5 bg-white text-black text-xs font-bold rounded-xl hover:bg-white/90 transition-all shrink-0">
+                  <button type="submit" className="px-4 py-1.5 bg-text-primary text-bg-base text-xs font-bold rounded-xl shadow-sm shrink-0">
                     Search
                   </button>
                 </form>
@@ -368,54 +368,61 @@ const Navbar = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
-                className="md:hidden mt-2 backdrop-blur-2xl bg-black/90 border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
+                className="md:hidden mt-2 backdrop-blur-2xl bg-bg-card/95 border border-border rounded-2xl overflow-hidden shadow-xl"
               >
                 <div className="p-4 space-y-1">
                   {navLinks.map((item) => (
                     <Link
                       key={item.path}
                       to={item.path}
+                      onClick={() => setMobileOpen(false)}
                       className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                         isActive(item.path)
-                          ? "bg-white/10 text-white"
-                          : "text-white/50 hover:text-white hover:bg-white/5"
+                          ? "bg-bg-card-hover text-text-primary border border-border"
+                          : "text-text-secondary hover:text-text-primary hover:bg-bg-card-hover border border-transparent"
                       }`}
                     >
                       {item.name}
                     </Link>
                   ))}
+                  <Link to="/wishlist" onClick={() => setMobileOpen(false)} className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-card-hover transition-all">
+                    <div className="flex items-center gap-3">
+                      <Heart size={14} /> Wishlist
+                    </div>
+                    {wishlist.length > 0 && <span className="text-[10px] bg-rose-500 text-white px-2 py-0.5 rounded-full">{wishlist.length}</span>}
+                  </Link>
                   {user?.role === "ADMIN" && (
-                    <Link to="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-indigo-400 hover:bg-indigo-500/10 transition-all">
+                    <Link to="/admin/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-indigo-500 hover:bg-indigo-500/10 transition-all">
                       <Shield size={14} /> Admin Panel
                     </Link>
                   )}
                   {user?.role === "RETAILER" && (
-                    <Link to="/retailer/dashboard" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-emerald-400 hover:bg-emerald-500/10 transition-all">
+                    <Link to="/retailer/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-emerald-500 hover:bg-emerald-500/10 transition-all">
                       <Store size={14} /> My Store
                     </Link>
                   )}
                 </div>
-                <div className="px-4 pb-4 pt-2 border-t border-white/5 flex flex-col gap-2">
+                <div className="px-4 pb-4 pt-2 border-t border-border flex flex-col gap-2">
                   {user ? (
                     <>
                       <div className="flex items-center gap-3 px-4 py-3">
-                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white">
+                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-md">
                           {user.name?.[0]?.toUpperCase()}
                         </div>
                         <div>
-                          <p className="text-xs font-semibold text-white">{user.name}</p>
-                          <p className="text-[10px] text-white/40">{user.email}</p>
+                          <p className="text-xs font-semibold text-text-primary">{user.name}</p>
+                          <p className="text-[10px] text-text-muted">{user.email}</p>
                         </div>
                       </div>
-                      <Link to="/orders" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-white/60 hover:text-white hover:bg-white/5 transition-all">
+                      <Link to="/orders" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-text-secondary hover:text-text-primary hover:bg-bg-card-hover transition-all">
                         <ShoppingBag size={14} /> My Orders
                       </Link>
-                      <Link to="/profile" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-white/60 hover:text-white hover:bg-white/5 transition-all">
+                      <Link to="/profile" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-text-secondary hover:text-text-primary hover:bg-bg-card-hover transition-all">
                         <User size={14} /> Profile
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-rose-400 hover:bg-rose-500/10 transition-all text-left w-full"
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-rose-500 hover:bg-rose-500/10 transition-all text-left w-full"
                       >
                         <X size={14} /> Sign Out
                       </button>
@@ -423,7 +430,7 @@ const Navbar = () => {
                   ) : (
                     <button
                       onClick={() => navigate("/login")}
-                      className="w-full py-3 bg-white text-black text-sm font-bold rounded-xl hover:bg-white/90 transition-all"
+                      className="w-full py-3 bg-text-primary text-bg-base text-sm font-bold rounded-xl shadow-md"
                     >
                       Sign In
                     </button>

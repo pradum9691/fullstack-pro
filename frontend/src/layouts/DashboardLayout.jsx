@@ -21,7 +21,7 @@ const DashboardLayout = () => {
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="w-64 shrink-0 hidden lg:block"
           >
-            <Sidebar close={() => setOpen(false)} />
+            <Sidebar />
           </motion.aside>
         )}
       </AnimatePresence>

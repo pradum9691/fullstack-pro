@@ -21,7 +21,7 @@ export const RetailerLayout = () => {
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="w-64 shrink-0 hidden lg:block"
           >
-            <RetailerSidebar close={() => setOpen(false)} />
+            <RetailerSidebar />
           </motion.aside>
         )}
       </AnimatePresence>
