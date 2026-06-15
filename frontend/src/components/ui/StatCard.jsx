@@ -14,7 +14,7 @@ const StatCard = ({ label, value, icon: Icon, color, bg, border, gradient, desc,
       />
 
       {/* Card */}
-      <div className="relative bg-[#111111] border border-white/[0.06] rounded-2xl p-5 hover:border-white/[0.12] transition-all duration-300 group-hover:-translate-y-0.5 overflow-hidden">
+      <div className="relative bg-bg-card border border-border rounded-2xl p-5 hover:border-border-hover transition-all duration-300 group-hover:-translate-y-0.5 overflow-hidden">
         {/* Subtle top accent line */}
         <div className={`absolute top-0 left-0 right-0 h-px ${bg.replace("bg-", "bg-gradient-to-r from-transparent via-").replace("/10", "/50 to-transparent")}`} />
 

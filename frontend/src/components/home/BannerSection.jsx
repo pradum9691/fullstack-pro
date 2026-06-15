@@ -23,7 +23,7 @@ const useCountdown = (targetHours = 12) => {
 
 const TimeUnit = ({ value, label }) => (
   <div className="flex flex-col items-center">
-    <div className="bg-white/[0.07] border border-white/[0.1] rounded-xl px-4 py-2.5 min-w-[52px] text-center">
+    <div className="bg-bg-card/[0.07] border border-border rounded-xl px-4 py-2.5 min-w-[52px] text-center">
       <span className="text-2xl font-bold text-white tabular-nums">
         {String(value).padStart(2, "0")}
       </span>
@@ -128,7 +128,7 @@ const BannerSection = () => {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate("/products")}
-            className="mt-8 group inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-sm bg-white text-black hover:bg-white/90 transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:shadow-[0_0_60px_rgba(255,255,255,0.25)]"
+            className="mt-8 group inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-sm bg-bg-card text-text-primary hover:bg-bg-card-hover transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:shadow-[0_0_60px_rgba(255,255,255,0.25)]"
           >
             <Sparkles size={15} />
             Shop the Sale

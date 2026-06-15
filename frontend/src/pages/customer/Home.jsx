@@ -14,7 +14,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-hidden bg-bg-base">
       <HeroSection onShop={() => navigate("/products")} />
  
       <Reveal y={30} duration={0.6}>

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { logoutSuccess } from "../../store/slices/authSlice";
 import { useCart } from "../../context/CartContext";
 import { useDispatch, useSelector } from "react-redux";
-import { Sun, Moon, Menu, X, Search, Heart, ShoppingBag, User, ChevronDown, Shield, Store } from "lucide-react";
+import { Search, Heart, Shield, Store, ChevronDown, Menu, User, X as XIcon, ShoppingBag } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import { clearWishlist } from "../../store/slices/wishlistSlice";
 import { toast } from "react-toastify";
@@ -145,7 +145,7 @@ const Navbar = () => {
               {user?.role === "ADMIN" && (
                 <Link
                   to="/admin/dashboard"
-                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium tracking-wide rounded-xl text-indigo-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all duration-200"
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium tracking-wide rounded-xl text-text-primary hover:text-text-primary hover:bg-bg-card-hover transition-all duration-200"
                 >
                   <Shield size={13} />
                   Admin
@@ -173,29 +173,18 @@ const Navbar = () => {
 
             {/* Right — Actions */}
             <div className="flex items-center gap-1">
-              {/* Search */}
+              {/* Search (text link) */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowSearch(!showSearch)}
-                className="h-8 w-8 flex items-center justify-center rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-card-hover transition-all duration-200"
+                className="h-8 flex items-center px-2 py-1 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-card-hover transition-all duration-200"
                 aria-label="Search"
               >
-                <Search size={15} />
+                Search
               </motion.button>
 
-              {/* Theme Toggle */}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={toggleTheme}
-                className="h-8 w-8 flex items-center justify-center rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-card-hover transition-all duration-200"
-                aria-label="Toggle theme"
-              >
-                {theme === "light" ? <Moon size={15} /> : <Sun size={15} />}
-              </motion.button>
-
-              {/* Wishlist */}
+              {/* Wishlist (text link) */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -316,7 +305,7 @@ const Navbar = () => {
                 <AnimatePresence mode="wait">
                   {mobileOpen ? (
                     <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
-                      <X size={16} />
+                      <XIcon size={16} />
                     </motion.div>
                   ) : (
                     <motion.div key="open" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.15 }}>
@@ -424,7 +413,7 @@ const Navbar = () => {
                         onClick={handleLogout}
                         className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-rose-500 hover:bg-rose-500/10 transition-all text-left w-full"
                       >
-                        <X size={14} /> Sign Out
+                        <XIcon size={14} /> Sign Out
                       </button>
                     </>
                   ) : (

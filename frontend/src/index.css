@@ -123,22 +123,24 @@ body {
 
 /* ─── Glassmorphism Utilities ────────────────────────────────────── */
 .glass {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--border);
+  opacity: 0.95;
 }
 
 .glass-dark {
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--bg-base);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--border);
+  opacity: 0.9;
 }
 
 /* ─── Gradient Text ──────────────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-muted) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -190,7 +192,7 @@ body {
 }
 
 .shimmer {
-  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+  background: linear-gradient(90deg, transparent 25%, var(--border-hover) 50%, transparent 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -217,15 +219,25 @@ body {
 
 /* ─── Premium Card Base ──────────────────────────────────────────── */
 .premium-card {
-  background: linear-gradient(145deg, #111111, #0d0d0d);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 1.5rem;
   transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+.dark .premium-card {
+  background: linear-gradient(145deg, #111111, #0d0d0d);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 
 .premium-card:hover {
-  border-color: rgba(255,255,255,0.12);
+  border-color: var(--border-hover);
   transform: translateY(-2px);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+}
+
+.dark .premium-card:hover {
   box-shadow: 0 20px 60px rgba(0,0,0,0.4);
 }
 
@@ -263,12 +275,12 @@ input:focus, textarea:focus, select:focus {
 .data-table td {
   padding: 1rem;
   font-size: 0.875rem;
-  border-bottom: 1px solid rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--border);
   transition: background-color 0.15s ease;
 }
 
 .data-table tr:hover td {
-  background-color: rgba(255,255,255,0.02);
+  background-color: var(--bg-card-hover);
 }
 
 .data-table tr:last-child td {
@@ -289,11 +301,16 @@ input:focus, textarea:focus, select:focus {
   white-space: nowrap;
 }
 
-.badge-emerald { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
-.badge-amber { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
-.badge-rose { background: rgba(244,63,94,0.12); color: #fb7185; border: 1px solid rgba(244,63,94,0.2); }
-.badge-indigo { background: rgba(99,102,241,0.12); color: #818cf8; border: 1px solid rgba(99,102,241,0.2); }
-.badge-neutral { background: rgba(255,255,255,0.06); color: #a1a1aa; border: 1px solid rgba(255,255,255,0.1); }
+.badge-emerald { background: rgba(16,185,129,0.1); color: #059669; border: 1px solid rgba(16,185,129,0.2); }
+.dark .badge-emerald { color: #34d399; }
+.badge-amber { background: rgba(245,158,11,0.1); color: #d97706; border: 1px solid rgba(245,158,11,0.2); }
+.dark .badge-amber { color: #fbbf24; }
+.badge-rose { background: rgba(244,63,94,0.1); color: #e11d48; border: 1px solid rgba(244,63,94,0.2); }
+.dark .badge-rose { color: #fb7185; }
+.badge-indigo { background: rgba(99,102,241,0.1); color: #4f46e5; border: 1px solid rgba(99,102,241,0.2); }
+.dark .badge-indigo { color: #818cf8; }
+.badge-neutral { background: var(--bg-card-hover); color: var(--text-secondary); border: 1px solid var(--border); }
+.dark .badge-neutral { color: #a1a1aa; border: 1px solid rgba(255,255,255,0.1); }
 
 /* ─── No scrollbar utility ───────────────────────────────────────── */
 .no-scrollbar::-webkit-scrollbar { display: none; }

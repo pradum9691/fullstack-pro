@@ -35,15 +35,15 @@ const Input = ({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           className={`
-            w-full bg-black/5 dark:bg-white/5 border rounded-xl text-sm transition-all duration-300
+            w-full bg-bg-card border rounded-xl text-sm transition-all duration-300
             ${Icon ? "pl-11 pr-4" : "px-4"}
             ${isPassword ? "pr-11" : ""}
             ${
               error 
                 ? "border-rose-500/50 focus:border-rose-500 bg-rose-500/5" 
-                : "border-black/10 dark:border-white/10 focus:border-black/50 dark:focus:border-white/50 focus:bg-transparent"
+                : "border-border focus:border-indigo-500 focus:bg-transparent"
             }
-            py-3 outline-none text-black dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500
+            py-3 outline-none text-text-primary placeholder:text-text-muted
             ${className}
           `}
           {...props}

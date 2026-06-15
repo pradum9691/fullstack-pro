@@ -2,10 +2,10 @@ import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 
 const variants = {
-  primary: "bg-white text-black hover:bg-neutral-200 dark:bg-black dark:text-white dark:hover:bg-neutral-800 border border-transparent dark:border-white/10",
-  secondary: "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 border border-transparent dark:border-white/5",
-  outline: "bg-transparent text-black dark:text-white border border-black/20 dark:border-white/20 hover:border-black/50 dark:hover:border-white/50",
-  ghost: "bg-transparent text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10",
+  primary: "bg-text-primary text-bg-base hover:opacity-90 border border-transparent shadow-md",
+  secondary: "bg-bg-card border border-border text-text-primary hover:bg-bg-card-hover",
+  outline: "bg-transparent text-text-primary border border-border hover:border-border-hover hover:bg-bg-card/50",
+  ghost: "bg-transparent text-text-primary hover:bg-bg-card-hover",
   danger: "bg-rose-500 text-white hover:bg-rose-600 border border-transparent",
   gradient: "bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:shadow-lg hover:shadow-indigo-500/25 border border-transparent"
 };

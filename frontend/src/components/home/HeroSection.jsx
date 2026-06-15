@@ -3,7 +3,7 @@ import { ArrowRight, Sparkles, Star } from "lucide-react";
 
 const HeroSection = ({ onShop }) => {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-[#050505]">
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-bg-base">
       {/* ── Background Layers ── */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Primary gradient */}
