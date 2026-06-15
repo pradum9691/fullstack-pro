@@ -9,7 +9,7 @@ const DashboardLayout = () => {
   const location = useLocation();
 
   return (
-    <div className="h-screen bg-[#080808] text-white overflow-hidden flex">
+    <div className="h-screen bg-bg-base text-text-primary overflow-hidden flex">
 
       {/* ── Desktop Sidebar ── */}
       <AnimatePresence initial={false}>
@@ -29,18 +29,18 @@ const DashboardLayout = () => {
       {/* ── Main Content ── */}
       <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Top bar with toggle */}
-        <div className="flex items-center gap-3 px-6 py-4 border-b border-white/[0.05] shrink-0">
+        <div className="flex items-center gap-3 px-6 py-4 border-b border-border bg-bg-base z-10 shrink-0">
           <button
             onClick={() => setOpen(!open)}
-            className="h-8 w-8 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.08] text-white/40 hover:text-white hover:bg-white/[0.08] hover:border-white/[0.15] transition-all duration-200"
+            className="h-8 w-8 flex items-center justify-center rounded-xl bg-bg-card border border-border text-text-muted hover:text-text-primary hover:bg-bg-card-hover hover:border-border-hover transition-all duration-200"
           >
             <Menu size={14} />
           </button>
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-xs text-white/20">
-            <span className="font-medium text-white/40">Admin</span>
+          <div className="flex items-center gap-2 text-xs text-text-muted">
+            <span className="font-medium">Admin</span>
             <span>/</span>
-            <span className="text-white/60 font-medium capitalize">
+            <span className="text-text-secondary font-medium capitalize">
               {location.pathname.split("/").filter(Boolean).pop() || "Dashboard"}
             </span>
           </div>

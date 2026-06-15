@@ -35,7 +35,7 @@ const Orders = () => {
   const loadOrders = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/orders/my");
+      const res = await api.get(`/orders/my?t=${Date.now()}`);
       setOrders(res.data.orders || []);
     } catch (err) {
       console.error("LOAD ORDERS ERROR", err);
@@ -127,7 +127,7 @@ const Orders = () => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="max-w-4xl mx-auto px-6 py-12 text-white"
+      className="max-w-4xl mx-auto px-6 pt-6 pb-12 text-text-primary"
     >
       <div className="mb-10">
         <span className="block text-xs font-bold uppercase tracking-widest text-indigo-400 mb-2">

@@ -3,8 +3,28 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ─── CSS Design Tokens ─────────────────────────────────────────── */
+/* ─── CSS Design Tokens (Light Mode Default) ─────────────────────── */
 :root {
+  --bg-base: #fafafa;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f4f4f5;
+  --border: rgba(0, 0, 0, 0.1);
+  --border-hover: rgba(0, 0, 0, 0.2);
+  --text-primary: #09090b;
+  --text-secondary: #52525b;
+  --text-muted: #a1a1aa;
+  --accent-indigo: #6366f1;
+  --accent-purple: #a855f7;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --glow-indigo: rgba(99, 102, 241, 0.15);
+  --glow-purple: rgba(168, 85, 247, 0.15);
+  --glow-emerald: rgba(16, 185, 129, 0.15);
+}
+
+/* ─── Dark Mode Tokens ───────────────────────────────────────────── */
+.dark {
   --bg-base: #080808;
   --bg-card: #111111;
   --bg-card-hover: #161616;
@@ -21,6 +41,18 @@
   --glow-indigo: rgba(99, 102, 241, 0.25);
   --glow-purple: rgba(168, 85, 247, 0.25);
   --glow-emerald: rgba(16, 185, 129, 0.25);
+}
+
+/* ─── Tailwind v4 Theme Variables ────────────────────────────────── */
+@theme {
+  --color-bg-base: var(--bg-base);
+  --color-bg-card: var(--bg-card);
+  --color-bg-card-hover: var(--bg-card-hover);
+  --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
 }
 
 /* ─── Base Reset ─────────────────────────────────────────────────── */

@@ -48,18 +48,46 @@ export const CartProvider = ({ children }) => {
   const updateQty = useCallback(async (productId, quantity) => {
     if (!hasToken() || quantity < 1) return;
 
-    const res = await api.patch(`/cart/${productId}`, { quantity });
+    // Optimistic Update
+    setCart((prev) => {
+      const items = prev.items.map(item => 
+        item.product._id === productId 
+          ? { ...item, quantity, subtotal: item.product.price * quantity } 
+          : item
+      );
+      const totalAmount = items.reduce((sum, item) => sum + item.subtotal, 0);
+      const itemsCount = items.reduce((sum, item) => sum + item.quantity, 0);
+      return { items, totalAmount, itemsCount };
+    });
 
-    setCart(res.data.data);
-  }, []);
+    try {
+      const res = await api.patch(`/cart/${productId}`, { quantity });
+      setCart(res.data.data);
+    } catch (err) {
+      console.error("Failed to update qty", err);
+      fetchCart(); // Revert on failure
+    }
+  }, [fetchCart]);
  
   const removeFromCart = useCallback(async (productId) => {
     if (!hasToken()) return;
 
-    const res = await api.delete(`/cart/${productId}`);
+    // Optimistic Update
+    setCart((prev) => {
+      const items = prev.items.filter(item => item.product._id !== productId);
+      const totalAmount = items.reduce((sum, item) => sum + item.subtotal, 0);
+      const itemsCount = items.reduce((sum, item) => sum + item.quantity, 0);
+      return { items, totalAmount, itemsCount };
+    });
 
-    setCart(res.data.data);
-  }, []);
+    try {
+      const res = await api.delete(`/cart/${productId}`);
+      setCart(res.data.data);
+    } catch (err) {
+      console.error("Failed to remove item", err);
+      fetchCart(); // Revert on failure
+    }
+  }, [fetchCart]);
  
   const clearCart = useCallback(async () => {
     if (!hasToken()) return;

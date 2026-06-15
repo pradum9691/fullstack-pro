@@ -243,7 +243,7 @@ const Products = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white pt-20">
+    <div className="w-full text-text-primary">
       {/* Page Header */}
       <div className="relative overflow-hidden border-b border-white/[0.05] py-16">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5" />

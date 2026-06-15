@@ -54,8 +54,16 @@ const wishlistSlice = createSlice({
       state.error = action.payload;
     })
 
-    .addCase(toggleWishlist.pending, (state) => {
-      state.loading = true;
+    .addCase(toggleWishlist.pending, (state, action) => {
+      const productId = action.meta.arg;
+      const existsIndex = state.items.findIndex(item => 
+        (item.product?._id || item._id || item) === productId
+      );
+      if (existsIndex >= 0) {
+        state.items.splice(existsIndex, 1);
+      } else {
+        state.items.push(productId);
+      }
     })
     .addCase(toggleWishlist.fulfilled, (state, action) => {
       state.items = action.payload;

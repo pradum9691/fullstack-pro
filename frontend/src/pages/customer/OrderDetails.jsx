@@ -38,7 +38,7 @@ const OrderDetails = () => {
     const fetchOrder = async () => {
       try {
         setLoading(true);
-        const res = await api.get(`/orders/my/${id}`);
+        const res = await api.get(`/orders/my/${id}?t=${Date.now()}`);
         setOrder(res.data.data);
       } catch (err) {
         console.error("ORDER LOAD ERROR 👉", err);
