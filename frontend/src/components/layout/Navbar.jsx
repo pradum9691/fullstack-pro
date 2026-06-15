@@ -277,7 +277,7 @@ const Navbar = () => {
                             onClick={handleLogout}
                             className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all"
                           >
-                            <X size={13} /> Sign Out
+                            <XIcon size={13} /> Sign Out
                           </button>
                         </div>
                       </motion.div>
@@ -338,7 +338,7 @@ const Navbar = () => {
                   />
                   {query && (
                     <button type="button" onClick={() => setQuery("")} className="text-text-muted hover:text-text-primary transition-colors">
-                      <X size={14} />
+                      <XIcon size={14} />
                     </button>
                   )}
                   <button type="submit" className="px-4 py-1.5 bg-text-primary text-bg-base text-xs font-bold rounded-xl shadow-sm shrink-0">
